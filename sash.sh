@@ -163,14 +163,14 @@ if [[ "$(_is_first_sash_run)" -eq "0" ]]; then
   echo -e "${white}[${green}+${white}]${restore} S.A.S.H. has been setup!"
 fi
 
-_sash_category_dirs=( $(find "$HOME/.bash/plugins/" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$") )
-for dir in "${_sash_category_dirs[@]}"; do
-  _sash_subcategory_dirs=( $(find "$HOME/.bash/plugins/$dir" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$") )
-  for sub_dir in "${_sash_subcategory_dirs[@]}"; do
-    for filename in $HOME/.bash/plugins/$dir/$sub_dir/*.sh; do
-      [[ -n "$SASH_TRACE" ]] && echo "\n\nSourcing File: $filename\n\n"
+_sash_category_dirs=( $(find "$HOME/.bash/plugins/" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$") )
+for __sash_loop_dir in "${_sash_category_dirs[@]}"; do
+  _sash_subcategory_dirs=( $(find "$HOME/.bash/plugins/$__sash_loop_dir" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$") )
+  for __sash_loop_sub_dir in "${_sash_subcategory_dirs[@]}"; do
+    for __sash_filename in $HOME/.bash/plugins/$__sash_loop_dir/$__sash_loop_sub_dir/*.sh; do
+      [[ -n "$SASH_TRACE" ]] && echo "\n\nSourcing File: $__sash_filename\n\n"
       [[ -n "$SASH_TRACE" ]] && set -x
-      source $filename
+      source $__sash_filename
       [[ -n "$SASH_TRACE" ]] && set +x
     done
   done
