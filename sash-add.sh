@@ -20,7 +20,7 @@ _sash_create_or_choose_subcategory() {
     echo "$_sash_intermediate_choice"
   else
     echo "$choice"
-  fi 
+  fi
 }
 
 # sash_add() -> None
@@ -49,6 +49,10 @@ sash_add() {
     exit 1
   fi
   local content_to_comment="$sash_multiline_content"
+  echo "Current Files you can append to are:"
+  for _sash_show_existing_filename in $category/$subcategory/*; do
+    echo "$(basename "$_sash_show_existing_filename")"
+  done
   read -p "Please Enter a filename to add this content to (should end in .sh): " _sash_add_filename
   SAVEIFS=$IFS
   IFS=$'\n'
