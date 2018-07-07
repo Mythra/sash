@@ -40,9 +40,8 @@ Whenever you need to add something to your modularized bashrc instead of manuall
 `mkdir && vim`'ing a file reach for `sash_add`:
 
 ```bash
-ecoan@kappa:~$ . ~/.bash/sash-add.sh 
 ecoan@kappa:~$ sash_add
-Please Choose a Category: 
+Please Choose a Category:
 1) /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/utilities
 2) /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/work
 3) /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/language
@@ -53,14 +52,14 @@ Please Choose a SubCategory:
 Please Enter the New Category Name: test
 Please Enter a filename to add this content to (should end in .sh): test.sh
 [+] Added, and sourced!
-ecoan@kappa:~$ cat ~/.bash/plugins/utilities/test/test.sh 
+ecoan@kappa:~$ cat ~/.bash/plugins/utilities/test/test.sh
 # This is a test of sash
 # using multiline comments
 export SASH_TEST=1
 ```
 
 This will open two windows inbetween "subcategory", and "filename". One window for you
-to type the content you want to add the bashrc, and one for you to type comments 
+to type the content you want to add the bashrc, and one for you to type comments
 (without the annoying '#' at the beginning of the line for long comments) so you can
 know what it is when coming back to it later.
 
