@@ -95,14 +95,14 @@ _sash_choose_from_options() {
 # Thus allowing a user to choose a directory.
 #
 # Note "use_new" has the unfortunate side effect of assuming no one has a
-# folder called "New" in the directory you're looking in because that's 
+# folder called "New" in the directory you're looking in because that's
 # what we return when there is a new option.
 _sash_choose_a_directory() {
   local dir="${1:-.}"
   local use_new="${2:-1}"
   local option
   local array_of_lines
-  
+
   array_of_lines=($(find "$dir" -maxdepth 1 -type d | grep -v "^\.$" | grep -v "^$dir$"))
   if [[ "$use_new" -eq "1" ]]; then
     option="$(_sash_choose_from_options ${array_of_lines[@]})"
@@ -159,15 +159,19 @@ if [[ "$(_is_first_sash_run)" -eq "0" ]]; then
   echo ""
   _sash_init_categories
   touch "$HOME/.bash/plugins/init-sash"
+  mkdir -p "$HOME/.bash/plugins/post"
   echo ""
   echo -e "${white}[${green}+${white}]${restore} S.A.S.H. has been setup!"
 fi
 
-_sash_category_dirs=( $(find "$HOME/.bash/plugins/" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$") )
+export SASH_LOADING=1
+
+_sash_category_dirs=( $(find "$HOME/.bash/plugins/" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$" | grep -v "^post$") )
 for __sash_loop_dir in "${_sash_category_dirs[@]}"; do
   _sash_subcategory_dirs=( $(find "$HOME/.bash/plugins/$__sash_loop_dir" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$") )
   for __sash_loop_sub_dir in "${_sash_subcategory_dirs[@]}"; do
     for __sash_filename in $HOME/.bash/plugins/$__sash_loop_dir/$__sash_loop_sub_dir/*.sh; do
+      [ -e "$__sash_filename" ] || continue
       [[ -n "$SASH_TRACE" ]] && echo "\n\nSourcing File: $__sash_filename\n\n"
       [[ -n "$SASH_TRACE" ]] && set -x
       source $__sash_filename
@@ -176,7 +180,21 @@ for __sash_loop_dir in "${_sash_category_dirs[@]}"; do
   done
 done
 
+unset SASH_LOADING
+
 source "$SASH_DIR/sash-add.sh"
 source "$SASH_DIR/sash-show.sh"
+
+export SASH_LOADED=1
+
+if [[ -d "$HOME/.bash/plugins/post" ]]; then
+  for __sash_filename in $HOME/.bash/plugins/post/*.sh; do
+    [ -e "$__sash_filename" ] || continue
+    [[ -n "$SASH_TRACE" ]] && echo "\n\nSourcing File: $__sash_filename\n\n"
+    [[ -n "$SASH_TRACE" ]] && set -x
+    source $__sash_filename
+    [[ -n "$SASH_TRACE" ]] && set +x
+  done
+fi
 
 export SASH_RUNNING=1

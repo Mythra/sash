@@ -13,6 +13,13 @@ sash creates a directory structure under `~/.bash/plugins/`. Specifically:
 sash will allow you to create those on your first run, you can make them
 manually if you prefer.
 
+There is one "special" category however. This is what's known as the "post" category.
+The "post" category ***does not*** have subcategories. Instead relying on the filenames
+to identify what they are. The post category is specifically used for when you want to run
+a piece of shell code _after_ everything else has run. There are a couple projects that need
+this, and this is the "sash" way of handling it. Again we don't want you to ever have to touch
+`~/.bashrc`. You should know where to look.
+
 ## Installation ##
 
 Installing sash for the first run is easy (the migration will take some time though).

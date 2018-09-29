@@ -38,9 +38,14 @@ sash_add() {
     mkdir -p "$HOME/.bash/plugins/$_sash_add_filename"
     category="$HOME/.bash/plugins/$_sash_add_filename"
   fi
-  echo "Please Choose a SubCategory: "
-  local subcategory="$(_sash_create_or_choose_subcategory $category)"
-  subcategory="${subcategory#./}"
+  local is_post="0"
+  if [[ "$category" == "$HOME/.bash/plugins/post" ]]; then
+    is_post="1"
+  else
+    echo "Please Choose a SubCategory: "
+    local subcategory="$(_sash_create_or_choose_subcategory $category)"
+    subcategory="${subcategory#./}"
+  fi
   if ! _sash_get_multiline_input "# Please insert what you want to add to your bashrc below:\n"; then
     exit 1
   fi
@@ -50,19 +55,35 @@ sash_add() {
   fi
   local content_to_comment="$sash_multiline_content"
   echo "Current Files you can append to are:"
-  for _sash_show_existing_filename in $category/$subcategory/*; do
-    echo "$(basename "$_sash_show_existing_filename")"
-  done
+  if [[ "$is_post" == "1" ]]; then
+    for _sash_show_existing_filename in $category/*; do
+      echo "$(basename "$_sash_show_existing_filename")"
+    done
+  else
+    for _sash_show_existing_filename in $category/$subcategory/*; do
+      echo "$(basename "$_sash_show_existing_filename")"
+    done
+  fi
   read -p "Please Enter a filename to add this content to (should end in .sh): " _sash_add_filename
   SAVEIFS=$IFS
   IFS=$'\n'
   content_to_comment=($content_to_comment)
   IFS=$SAVEIFS
-  for (( i=0; i<${#content_to_comment[@]}; i++ )); do
-    echo "# ${content_to_comment[$i]}" >> "$category/$subcategory/$_sash_add_filename"
-  done
-  echo "$content_to_add" >> "$category/$subcategory/$_sash_add_filename"
-  source "$category/$subcategory/$_sash_add_filename"
+
+  if [[ "$is_post" == "1" ]]; then
+    for (( i=0; i<${#content_to_comment[@]}; i++ )); do
+      echo "# ${content_to_comment[$i]}" >> "$category/$_sash_add_filename"
+    done
+    echo "$content_to_add" >> "$category/$_sash_add_filename"
+    source "$category/$_sash_add_filename"
+  else
+    for (( i=0; i<${#content_to_comment[@]}; i++ )); do
+      echo "# ${content_to_comment[$i]}" >> "$category/$subcategory/$_sash_add_filename"
+    done
+    echo "$content_to_add" >> "$category/$subcategory/$_sash_add_filename"
+    source "$category/$subcategory/$_sash_add_filename"
+  fi
+
   echo "[+] Added, and sourced!"
 }
 
