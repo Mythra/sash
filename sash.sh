@@ -136,7 +136,7 @@ _sash_init_categories() {
 # Determines if the is the first run of sash with some really crappy metrics.
 _is_first_sash_run() {
   (mkdir -p ~/.bash/plugins || true)
-  if [ -z "$(ls -A ~/.bash/plugins/)" ]; then
+  if [[ -z "$(ls -A ~/.bash/plugins/)" ]]; then
     echo "0"
     return
   else
@@ -171,11 +171,11 @@ for __sash_loop_dir in "${_sash_category_dirs[@]}"; do
   _sash_subcategory_dirs=( $(find "$HOME/.bash/plugins/$__sash_loop_dir" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$") )
   for __sash_loop_sub_dir in "${_sash_subcategory_dirs[@]}"; do
     for __sash_filename in $HOME/.bash/plugins/$__sash_loop_dir/$__sash_loop_sub_dir/*.sh; do
-      [ -x "$__sash_filename" ] || continue
-      [[ -n "$SASH_TRACE" ]] && echo "\n\nSourcing File: $__sash_filename\n\n"
-      [[ -n "$SASH_TRACE" ]] && set -x
+      [[ -x $__sash_filename ]] || continue
+      [[ -n $SASH_TRACE ]] && echo "\n\nSourcing File: $__sash_filename\n\n"
+      [[ -n $SASH_TRACE ]] && set -x
       source $__sash_filename
-      [[ -n "$SASH_TRACE" ]] && set +x
+      [[ -n $SASH_TRACE ]] && set +x
     done
   done
 done
@@ -189,11 +189,11 @@ export SASH_LOADED=1
 
 if [[ -d "$HOME/.bash/plugins/post" ]]; then
   for __sash_filename in $HOME/.bash/plugins/post/*.sh; do
-    [ -x "$__sash_filename" ] || continue
-    [[ -n "$SASH_TRACE" ]] && echo "\n\nSourcing File: $__sash_filename\n\n"
-    [[ -n "$SASH_TRACE" ]] && set -x
+    [[ -x "$__sash_filename" ]] || continue
+    [[ -n $SASH_TRACE ]] && echo "\n\nSourcing File: $__sash_filename\n\n"
+    [[ -n $SASH_TRACE ]] && set -x
     source $__sash_filename
-    [[ -n "$SASH_TRACE" ]] && set +x
+    [[ -n $SASH_TRACE ]] && set +x
   done
 fi
 

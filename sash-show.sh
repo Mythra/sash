@@ -19,7 +19,7 @@ _sash_materialize_view() {
   if [[ "$category" == "$HOME/.bash/plugins/post" ]]; then
     dir="$category"
   else
-    if [ ! -d "$category/$sub_category" ]; then
+    if [[ ! -d "$category/$sub_category" ]]; then
       echo -e "${white}[${red}-${white}]${restore} Can't find category!"
       echo "Cateogory is: [ $category/$sub_category ]."
       return 1
@@ -28,7 +28,7 @@ _sash_materialize_view() {
   fi
 
   for filename in $dir/*.sh; do
-    [ -x "$filename" ] || continue
+    [[ -x $filename ]] || continue
     echo ""
     echo "###############################################################"
     echo "# Content from: $filename"
@@ -42,7 +42,7 @@ _sash_materialize_view() {
 sash_show() {
   if [[ -n "$1" ]]; then
     local full_category="$HOME/.bash/plugins/$1"
-    if [ ! -d "$full_category" ]; then
+    if [[ ! -d $full_category ]]; then
       echo -e "${white}[${red}-${white}]${restore} Category doesn't exist!"
     fi
     if [[ -n "$2" ]]; then

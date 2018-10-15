@@ -1,3 +1,7 @@
+## 1.1.1 (Unreleased)
+
+* Don't spawn subshells when not needed
+
 ## 1.1.0 (October 15th, 2018)
 
 * Add Postload section.
