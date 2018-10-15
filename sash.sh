@@ -171,7 +171,7 @@ for __sash_loop_dir in "${_sash_category_dirs[@]}"; do
   _sash_subcategory_dirs=( $(find "$HOME/.bash/plugins/$__sash_loop_dir" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$") )
   for __sash_loop_sub_dir in "${_sash_subcategory_dirs[@]}"; do
     for __sash_filename in $HOME/.bash/plugins/$__sash_loop_dir/$__sash_loop_sub_dir/*.sh; do
-      [ -e "$__sash_filename" ] || continue
+      [ -x "$__sash_filename" ] || continue
       [[ -n "$SASH_TRACE" ]] && echo "\n\nSourcing File: $__sash_filename\n\n"
       [[ -n "$SASH_TRACE" ]] && set -x
       source $__sash_filename
@@ -189,7 +189,7 @@ export SASH_LOADED=1
 
 if [[ -d "$HOME/.bash/plugins/post" ]]; then
   for __sash_filename in $HOME/.bash/plugins/post/*.sh; do
-    [ -e "$__sash_filename" ] || continue
+    [ -x "$__sash_filename" ] || continue
     [[ -n "$SASH_TRACE" ]] && echo "\n\nSourcing File: $__sash_filename\n\n"
     [[ -n "$SASH_TRACE" ]] && set -x
     source $__sash_filename

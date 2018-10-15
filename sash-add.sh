@@ -75,12 +75,14 @@ sash_add() {
       echo "# ${content_to_comment[$i]}" >> "$category/$_sash_add_filename"
     done
     echo "$content_to_add" >> "$category/$_sash_add_filename"
+    chmod +x "$category/$_sash_add_filename"
     source "$category/$_sash_add_filename"
   else
     for (( i=0; i<${#content_to_comment[@]}; i++ )); do
       echo "# ${content_to_comment[$i]}" >> "$category/$subcategory/$_sash_add_filename"
     done
     echo "$content_to_add" >> "$category/$subcategory/$_sash_add_filename"
+    chmod +x "$category/$subcategory/$_sash_add_filename"
     source "$category/$subcategory/$_sash_add_filename"
   fi
 

@@ -27,7 +27,8 @@ _sash_materialize_view() {
     dir="$category/$sub_category"
   fi
 
-  for filename in $dir/*; do
+  for filename in $dir/*.sh; do
+    [ -x "$filename" ] || continue
     echo ""
     echo "###############################################################"
     echo "# Content from: $filename"
