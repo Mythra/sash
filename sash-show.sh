@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # sash-show.sh
 #
@@ -39,6 +39,10 @@ _sash_materialize_view() {
 }
 
 # sash_show(category: Option<String>, subcategory: Option<String>) -> String
+#
+# Modifies Variables: None
+#
+# Implements the sash_show command.
 sash_show() {
   if [[ -n "$1" ]]; then
     local full_category="$HOME/.bash/plugins/$1"

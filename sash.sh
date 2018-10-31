@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Initiates a S.A.S.H. Shell.
 #
@@ -35,7 +35,7 @@ SASH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # _sash_get_multiline_input(text: Option<String>) -> (0 || 1)
 #
-# Modifies Globals:
+# Modifies Variables:
 #   - sash_multiline_content
 #
 # Grabs some multiline input through the configured editor (defaulting to nano),
@@ -68,7 +68,7 @@ _sash_get_multiline_input() {
 
 # _sash_choose_from_options(arr: Array<String>) -> String
 #
-# Modifies Globals: None
+# Modifies Variables: None
 #
 # Takes an array of options presenting an index'd select menu, and then
 # returns the options that the user selects.
@@ -89,7 +89,7 @@ _sash_choose_from_options() {
 
 # _sash_choose_a_directory(dir: Option<String>, use_new: Option<(0 || 1)>) -> String
 #
-# Modifies Globals: None
+# Modifies Variables: None
 #
 # Lists all directories in the dir you pass in, and lets the user choose one.
 # Thus allowing a user to choose a directory.
@@ -114,7 +114,7 @@ _sash_choose_a_directory() {
 
 # _sash_init_categories() -> None
 #
-# Modifies Globals:
+# Modifies Variables:
 #  - sash_init_content
 #
 # Prompts the User to create an initial set of categories.
@@ -131,7 +131,7 @@ _sash_init_categories() {
 
 # _is_first_sash_run() -> (0 || 1)
 #
-# Modifies Globals: None
+# Modifies Variables: None
 #
 # Determines if the is the first run of sash with some really crappy metrics.
 _is_first_sash_run() {
@@ -166,6 +166,8 @@ fi
 
 export SASH_LOADING=1
 
+source "$SASH_DIR/sash-parse.sh"
+
 _sash_category_dirs=( $(find "$HOME/.bash/plugins/" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$" | grep -v "^post$") )
 for __sash_loop_dir in "${_sash_category_dirs[@]}"; do
   _sash_subcategory_dirs=( $(find "$HOME/.bash/plugins/$__sash_loop_dir" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$") )
@@ -182,9 +184,6 @@ done
 
 unset SASH_LOADING
 
-source "$SASH_DIR/sash-add.sh"
-source "$SASH_DIR/sash-show.sh"
-
 export SASH_LOADED=1
 
 if [[ -d "$HOME/.bash/plugins/post" ]]; then
@@ -196,5 +195,9 @@ if [[ -d "$HOME/.bash/plugins/post" ]]; then
     [[ -n $SASH_TRACE ]] && set +x
   done
 fi
+
+source "$SASH_DIR/sash-add.sh"
+source "$SASH_DIR/sash-show.sh"
+source "$SASH_DIR/sash-package.sh"
 
 export SASH_RUNNING=1

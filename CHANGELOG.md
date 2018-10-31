@@ -1,6 +1,11 @@
 ## 1.1.1 (Unreleased)
 
-* Don't spawn subshells when not needed
+* Don't spawn subshells when not needed.
+* Switch to `#!/usr/bin/env bash` shebang, to properly reference bash on Mac OS X hosts.
+* Source sash utilities before loading plugin code.
+* Source sash commands after `post` section, so functions can't be overwritten by plugins.
+* Add `sash-parse.sh` which allows for parsing arguments without using `getopt` which if different
+  for bsd/gnu.
 
 ## 1.1.0 (October 15th, 2018)
 

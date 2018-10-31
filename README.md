@@ -9,7 +9,7 @@ being overarching categories such as "work"/"home"/"languages"/"utilties", where
 sub-categories go within that such as "ruby" within "languages".
 
 sash creates a directory structure under `~/.bash/plugins/`. Specifically:
-`~/.bash/categories/<main_category>/<sub_category>/*.sh`. So although
+`~/.bash/plugins/<main_category>/<sub_category>/*.sh`. So although
 sash will allow you to create those on your first run, you can make them
 manually if you prefer.
 
@@ -107,7 +107,6 @@ ecoan@kappa:~$ sash_show utilities/test
 # for testing
 export SASH_TEST=1
 ```
-
 
 ### sash_trace ###
 

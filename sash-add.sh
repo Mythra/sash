@@ -1,13 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Implements the sash_add/sash-add commands.
+# Implements the sash_add commands.
 #
 # S.A.S.H. is the main way to add things to your ~/.bashrc and still
 # maintain structure.
 
 # _sash_create_or_choose_subcategory(category: String) -> String
 #
-# Modifies Globals:
+# Modifies Variables:
 #   - _sash_intermediate_choice
 #
 # allows the user to choose, or create a subcategroy within sash.
@@ -25,7 +25,7 @@ _sash_create_or_choose_subcategory() {
 
 # sash_add() -> None
 #
-# Modifies Globals:
+# Modifies Variables:
 #   - _sash_add_filename
 #
 # allows the user to add content to their ~/.bashrc in a structured
