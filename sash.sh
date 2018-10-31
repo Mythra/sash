@@ -198,6 +198,5 @@ fi
 
 source "$SASH_DIR/sash-add.sh"
 source "$SASH_DIR/sash-show.sh"
-source "$SASH_DIR/sash-package.sh"
 
 export SASH_RUNNING=1
