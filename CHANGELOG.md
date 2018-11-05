@@ -1,4 +1,4 @@
-## 1.1.1 (Unreleased)
+## 1.1.1 (November 5th, 2018)
 
 * Don't spawn subshells when not needed.
 * Switch to `#!/usr/bin/env bash` shebang, to properly reference bash on Mac OS X hosts.
