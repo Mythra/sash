@@ -6,6 +6,8 @@
 * Source sash commands after `post` section, so functions can't be overwritten by plugins.
 * Add `sash-parse.sh` which allows for parsing arguments without using `getopt` which if different
   for bsd/gnu.
+* Add in first iteration of: `sash-package.sh` which allows you to package up a particular category,
+  or subcategory for distribution to others. Includes checking for secrets.
 
 ## 1.1.0 (October 15th, 2018)
 

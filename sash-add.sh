@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Implements the sash_add commands.
+# Implements the sash_add command.
 #
 # S.A.S.H. is the main way to add things to your ~/.bashrc and still
 # maintain structure.
@@ -46,7 +46,7 @@ sash_add() {
     local subcategory="$(_sash_create_or_choose_subcategory $category)"
     subcategory="${subcategory#./}"
   fi
-  if ! _sash_get_multiline_input "# Please insert what you want to add to your bashrc below:\n"; then
+  if ! _sash_get_multiline_input "# Please insert what you want to add to your bashrc below:" ""; then
     exit 1
   fi
   local content_to_add="$sash_multiline_content"

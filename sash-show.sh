@@ -47,7 +47,7 @@ sash_show() {
   if [[ -n "$1" ]]; then
     local full_category="$HOME/.bash/plugins/$1"
     if [[ ! -d $full_category ]]; then
-      echo -e "${white}[${red}-${white}]${restore} Category doesn't exist!"
+      echo -e "${white}[${red}-${white}]${restore} Category: [$1] doesn't exist!"
     fi
     if [[ -n "$2" ]]; then
       _sash_materialize_view "$full_category" "$2"

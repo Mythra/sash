@@ -354,6 +354,12 @@ __sash_parse_args() {
     fi
   done
 
+  if [[ "$state" == "1" ]]; then
+    __sash_parse_results["$value_to_write_to"]="0"
+    state=0
+    value_to_write_to=""
+  fi
+
   __sash_parse_results["__STDIN"]="$str_buffer"
   return 0
 }

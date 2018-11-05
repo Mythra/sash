@@ -52,9 +52,10 @@ SASH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # ```
 _sash_get_multiline_input() {
   local temp=$(mktemp "${TMPDIR:-/tmp}/sash-input.XXXXXXXXXX") || return 1
-  if [[ -n $1 ]]; then
-    echo "$1" >> "$temp"
-  fi
+  local arg
+  for arg in "$@"; do
+    echo "$arg" >> "$temp"
+  done
   local ret_code
   if "$EDITOR" -- "$temp" && [[ -s $temp ]]; then
     sash_multiline_content=$(<"$temp")
@@ -198,5 +199,6 @@ fi
 
 source "$SASH_DIR/sash-add.sh"
 source "$SASH_DIR/sash-show.sh"
+source "$SASH_DIR/sash-package.sh"
 
 export SASH_RUNNING=1
