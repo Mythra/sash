@@ -66,9 +66,11 @@ sash_add() {
   fi
   read -p "Please Enter a filename to add this content to (should end in .sh): " _sash_add_filename
   SAVEIFS=$IFS
+  trap "export IFS=$SAVEIFS" SIGINT SIGQUIT SIGTSTP
   IFS=$'\n'
   content_to_comment=($content_to_comment)
   IFS=$SAVEIFS
+  trap - SIGINT SIGQUIT SIGTSTP
 
   if [[ "$is_post" == "1" ]]; then
     for (( i=0; i<${#content_to_comment[@]}; i++ )); do
