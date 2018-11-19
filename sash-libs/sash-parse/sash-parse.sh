@@ -175,6 +175,7 @@ __sash_find_key_for_arg() {
 #
 # Parses the arguments you need to parse, and writes results as an associative array with the name: "__sash_parse_results".
 # Use the return value to check if there was an error (non-zero value).
+# All results are written using the "long-name".
 #
 # Error Codes:
 #   0 - No Error

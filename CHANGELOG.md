@@ -1,3 +1,8 @@
+## 1.X - Unreleased
+
+* Don't source `sash-parse.sh` before plugins load as plugins can overwrite that.
+* Move `sash-parse.sh` into a `sash-libs` folder.
+
 ## 1.1.1 (November 5th, 2018)
 
 * Don't spawn subshells when not needed.

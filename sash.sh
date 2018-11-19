@@ -167,8 +167,6 @@ fi
 
 export SASH_LOADING=1
 
-source "$SASH_DIR/sash-parse.sh"
-
 _sash_category_dirs=( $(find "$HOME/.bash/plugins/" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$" | grep -v "^post$") )
 for __sash_loop_dir in "${_sash_category_dirs[@]}"; do
   _sash_subcategory_dirs=( $(find "$HOME/.bash/plugins/$__sash_loop_dir" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$") )
@@ -196,6 +194,8 @@ if [[ -d "$HOME/.bash/plugins/post" ]]; then
     [[ -n $SASH_TRACE ]] && set +x
   done
 fi
+
+source "$SASH_DIR/sash-libs/sash-parse/sash-parse.sh"
 
 source "$SASH_DIR/sash-add.sh"
 source "$SASH_DIR/sash-show.sh"
