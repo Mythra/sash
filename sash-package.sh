@@ -12,6 +12,8 @@
 # checks:
 #   * Whether or not to run checks for secrets.
 _sash_package_subcategory() {
+  __sash_allow_errors
+
   local full_category_path="${1%/}"
   local run_checks="$2"
 
@@ -65,6 +67,8 @@ _sash_package_subcategory() {
 # checks:
 #   * whether or not to run checks on files for secrets.
 _sash_package_category() {
+  __sash_allow_errors
+
   local full_category_path="${1%/}"
   local run_checks="$2"
 
@@ -122,6 +126,8 @@ _sash_package_category() {
 # friends. Note: Sash package will give you an option to filter out content for each file
 # incase of secrets, unless you specify: `--package-without-checks`.
 sash_package() {
+  __sash_guard_errors
+
   local arguments="${@}"
   local flags=("package-without-checks" "c|category" "s|subcategory" "f|full-category")
 

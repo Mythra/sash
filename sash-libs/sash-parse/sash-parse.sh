@@ -55,12 +55,10 @@ __sash_split_str() {
   local split_by="$2"
 
   local SAVEIFS="$IFS"
-  trap "export IFS=$SAVEIFS" SIGINT SIGQUIT SIGTSTP
   IFS=$split_by
   local split
   read -a split <<< "$to_split"
   IFS=$SAVEIFS
-  trap - SIGINT SIGQUIT SIGTSTP
 
   printf '%s ' "${split[@]}"
 }

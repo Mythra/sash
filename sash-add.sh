@@ -12,6 +12,8 @@
 #
 # allows the user to choose, or create a subcategroy within sash.
 _sash_create_or_choose_subcategory() {
+  __sash_guard_errors
+
   local category="$1"
   local choice="$(cd "$category" && _sash_choose_a_directory "." 0)"
   if [[ "$choice" == "New" ]]; then
@@ -31,6 +33,8 @@ _sash_create_or_choose_subcategory() {
 # allows the user to add content to their ~/.bashrc in a structured
 # and sensible way.
 sash_add() {
+  __sash_guard_errors
+
   echo "Please Choose a Category: "
   local category="$(_sash_choose_a_directory "$HOME/.bash/plugins/" 0)"
   if [[ "$category" == "New" ]]; then
@@ -66,11 +70,9 @@ sash_add() {
   fi
   read -p "Please Enter a filename to add this content to (should end in .sh): " _sash_add_filename
   SAVEIFS=$IFS
-  trap "export IFS=$SAVEIFS" SIGINT SIGQUIT SIGTSTP
   IFS=$'\n'
   content_to_comment=($content_to_comment)
   IFS=$SAVEIFS
-  trap - SIGINT SIGQUIT SIGTSTP
 
   if [[ "$is_post" == "1" ]]; then
     for (( i=0; i<${#content_to_comment[@]}; i++ )); do
