@@ -118,6 +118,14 @@ __sash_pop_err_mode_stack() {
   _sash_global_err_mode_stack=("${new_arr[@]}")
   if [[ "${#_sash_global_err_mode_stack[@]}" == "0" ]]; then
     __sash_reset_initial_stack
+  else
+    local last_elem="${_sash_global_err_mode_stack[-1]}"
+    local inner_split=(${last_elem//|/\ })
+    if [[ "${inner_split[1]}" == "1" ]]; then
+      set -e
+    else
+      set +e
+    fi
   fi
 }
 
