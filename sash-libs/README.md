@@ -8,6 +8,16 @@ libs.
 
 The libraries themselves are listed below.
 
+## Sash-Err-Stack ##
+
+`sash-err-stack` is a library for controlling `set -e` state. Unfortunately if
+you're a library like sash, you can't just: `set -e`, since that causes
+problems for other scripts around you. However, you still want the benefits
+`set -e` provides in order to ensure your script doesn't keep running. This
+is where `sash-err-stack` fits in.
+
+Dependencies: None
+
 ## Sash-Parse ##
 
 `sash-parse` is a library built for parsing arguments using nothing but bash,
@@ -23,3 +33,6 @@ two real downsides here:
 
 All in all `sash-parse` just provides a "more complete" parsing experience,
 one you might expect inside of a full blown language (such as Go, Rust, etc.)
+
+Dependencies:
+  * Sash-Err-Stack

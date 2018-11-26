@@ -69,10 +69,25 @@ sash_add() {
     done
   fi
   read -p "Please Enter a filename to add this content to (should end in .sh): " _sash_add_filename
+
+  local trapped_sigint="$(_sash_get_trapped_text SIGINT)"
+  local trapped_sigquit="$(_sash_get_trapped_text SIGQUIT)"
   SAVEIFS=$IFS
+  _sash_safe_add_to_trap "IFS=$SAVEIFS" "SIGINT"
+  _sash_safe_add_to_trap "IFS=$SAVEIFS" "SIGQUIT"
   IFS=$'\n'
   content_to_comment=($content_to_comment)
   IFS=$SAVEIFS
+  if [[ "x$trapped_sigint" != "x" ]]; then
+    trap "$trapped_sigint" SIGINT
+  else
+    trap - SIGINT
+  fi
+  if [[ "x$trapped_sigquit" != "x" ]]; then
+    trap "$trapped_sigquit" SIGQUIT
+  else
+    trap - SIGQUIT
+  fi
 
   if [[ "$is_post" == "1" ]]; then
     for (( i=0; i<${#content_to_comment[@]}; i++ )); do

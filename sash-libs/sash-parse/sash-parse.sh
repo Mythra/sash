@@ -29,11 +29,15 @@
 # S.A.S.H. is the main way to add things to your ~/.bashrc and still
 # maintain structure.
 
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../sash-err-stack/sash-err-stack.sh"
+
 # __sash_strip_quotes(to_strip: String) -> String
 #
 # to_strip:
 #   * the string who should have it's quotes stripped.
 __sash_strip_quotes() {
+  __sash_guard_errors
+
   local to_strip="$1"
   if [[ "$to_strip" =~ ^\".*$ ]]; then
     to_strip="$(echo "$to_strip" | cut -c 2-)"
@@ -51,14 +55,31 @@ __sash_strip_quotes() {
 # split_by:
 #   * the string to split by.
 __sash_split_str() {
+  __sash_guard_errors
+
   local to_split="$1"
   local split_by="$2"
 
+  local trapped_sigint="$(_sash_get_trapped_text SIGINT)"
+  local trapped_sigquit="$(_sash_get_trapped_text SIGQUIT)"
+
   local SAVEIFS="$IFS"
+  _sash_safe_add_to_trap "IFS=$SAVEIFS" "SIGINT"
+  _sash_safe_add_to_trap "IFS=$SAVEIFS" "SIGQUIT"
   IFS=$split_by
   local split
   read -a split <<< "$to_split"
   IFS=$SAVEIFS
+  if [[ "x$trapped_sigint" != "x" ]]; then
+    trap "$trapped_sigint" SIGINT
+  else
+    trap - SIGINT
+  fi
+  if [[ "x$trapped_sigquit" != "x" ]]; then
+    trap "$trapped_sigquit" SIGQUIT
+  else
+    trap - SIGQUIT
+  fi
 
   printf '%s ' "${split[@]}"
 }
@@ -72,6 +93,8 @@ __sash_split_str() {
 #
 # Returns 0 if the key isn't duplicated, 1 if it is.
 __sash_check_duplicate_key() {
+  __sash_guard_errors
+
   local key_to_check="$1"
   shift
   local flags=("$@")
@@ -127,6 +150,8 @@ __sash_check_duplicate_key() {
 # args:
 #   * the list of sash arguments.
 __sash_find_key_for_arg() {
+  __sash_guard_errors
+
   local key_to_attempt_a_match="$1"
   # Properly match: `-d=arg` arguments.
   local split_by_equals=($(__sash_split_str "$key_to_attempt_a_match" "="))
@@ -185,6 +210,8 @@ __sash_find_key_for_arg() {
 #   4 - Got arg when expecting value.
 #   5 - Unknown Argument
 __sash_parse_args() {
+  __sash_allow_errors
+
   local to_parse_str="$1"
   local to_parse=($(__sash_split_str "$to_parse_str" " "))
 

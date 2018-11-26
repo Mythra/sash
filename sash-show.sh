@@ -13,6 +13,7 @@
 # Materializes a view for a category, and subcategory.
 _sash_materialize_view() {
   __sash_guard_errors
+
   local category="$1"
   local sub_category="${2#./}"
   local dir=""
@@ -46,6 +47,7 @@ _sash_materialize_view() {
 # Implements the sash_show command.
 sash_show() {
   __sash_guard_errors
+
   if [[ -n "$1" ]]; then
     local full_category="$HOME/.bash/plugins/$1"
     if [[ ! -d $full_category ]]; then

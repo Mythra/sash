@@ -14,6 +14,7 @@
 EDITOR=${EDITOR:-vim}
 SASH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+source "$SASH_DIR/sash-libs/sash-err-stack/sash-err-stack.sh"
 source "$SASH_DIR/sash-utils/sash-utils.sh"
 
 # _sash_init_categories() -> None

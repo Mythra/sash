@@ -3,8 +3,10 @@
 * Don't source `sash-parse.sh` before plugins load as plugins can overwrite that.
 * Move `sash-parse.sh` into a `sash-libs` folder.
 * Create `sash-utils` for basic utility script for sash directly.
-* Use `err-stack` to set error mode for sash, but not ruin any parts of the shell
+* Use `sash-err-stack` to set error mode for sash, but not ruin any parts of the shell
   caused by error mode being active.
+* Use traps to ensure IFS isn't left in a bad state for `sash-parse`/`sash-add`.
+* `sash-parse` now depends on `sash-err-stack`
 
 ## 1.1.1 (November 5th, 2018)
 
