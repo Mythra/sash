@@ -29,7 +29,11 @@
 # S.A.S.H. is the main way to add things to your ~/.bashrc and still
 # maintain structure.
 
-source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../sash-err-stack/sash-err-stack.sh"
+if [[ "x$SASH_ERR_DIR" == "x" ]]; then
+  source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../sash-err-stack/sash-err-stack.sh"
+else
+  source "$SASH_ERR_DIR/sash-err-stack.sh"
+fi
 
 # __sash_strip_quotes(to_strip: String) -> String
 #
