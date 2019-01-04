@@ -382,7 +382,11 @@ __sash_parse_args() {
     else
       # No Start of an arg, must be in extra values passed in.
       state=4
-      str_buffer="$str_buffer $current_user_arg"
+      if [[ "x$str_buffer" == "x" ]]; then
+        str_buffer="$current_user_arg"
+      else
+        str_buffer="$str_buffer $current_user_arg"
+      fi
     fi
   done
 
