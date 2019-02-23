@@ -1,4 +1,4 @@
-## 1.2.0 - Unreleased
+## 1.2.0 - (February 23rd, 2019)
 
 * Don't source `sash-parse.sh` before plugins load as plugins can overwrite that.
 * Move `sash-parse.sh` into a `sash-libs` folder.
