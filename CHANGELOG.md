@@ -1,4 +1,4 @@
-## 1.X - Unreleased
+## 1.2.0 - Unreleased
 
 * Don't source `sash-parse.sh` before plugins load as plugins can overwrite that.
 * Move `sash-parse.sh` into a `sash-libs` folder.
@@ -7,6 +7,8 @@
   caused by error mode being active.
 * Use traps to ensure IFS isn't left in a bad state for `sash-parse`/`sash-add`.
 * `sash-parse` now depends on `sash-err-stack`
+* Finalize `sash-package.sh` which allows you to package up a particular category, or subcategory
+  for distribution to others. Signs with keybase, otherwise you need to provide: "--unsafe-no-sign".
 
 ## 1.1.1 (November 5th, 2018)
 

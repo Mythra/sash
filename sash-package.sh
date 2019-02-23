@@ -120,6 +120,21 @@ _sash_package_category() {
   return 0
 }
 
+__sash_append_to_root_of_tar_xz() {
+  __sash_guard_errors
+
+  local tarxz_file="$1"
+  local file="$2"
+
+  local my_dir="$(pwd)"
+  local temp_dir=$(mktemp -d "${TMPDIR:-/tmp}/sash-tmp-add-to-tar.XXXXXXXXXX")
+  tar xJf "$tarxz_file" -C "$temp_dir"
+  cp "$file" "$temp_dir"
+  (cd "$temp_dir" && tar cfJ "$my_dir/tmp.tar.xz" .)
+  rm "$tarxz_file"
+  mv "$my_dir/tmp.tar.xz" "$tarxz_file"
+}
+
 # sash_package(args: Array<String>) -> Int
 #
 # sash_package will package up a category, or sub category for you to distribute to your
@@ -129,17 +144,24 @@ sash_package() {
   __sash_guard_errors
 
   local arguments="${@}"
-  local flags=("package-without-checks" "c|category" "s|subcategory" "f|full-category")
+  local flags=("package-without-checks" "c|category" "s|subcategory" "f|full-category" "u|keybase-user" "unsafe-no-sign")
 
   if ! __sash_parse_args "$arguments" "${flags[@]}" ; then
     echo "Failed to parse arguments for sash_package" >&2
     return 1
   fi
 
+  if [[ "${__sash_parse_results[unsafe-no-sign]}" != "0" ]]; then
+    if ! hash keybase 2>/dev/null; then
+      die "Please install the Keybase CLI for generating packages."
+    fi
+  fi
+
   local category=""
   local subcategory=""
   local is_full_category=""
   local run_checks="1"
+  local final_result=""
 
   if [[ "${__sash_parse_results[package-without-checks]}" == "0" ]]; then
     run_checks="0"
@@ -154,26 +176,63 @@ sash_package() {
     echo -e "${white}[${red}-${white}]${restore} Category: [$1] doesn't exist!"
   fi
 
-  # TODO: Implement Signing + Versioning.
-
   if [[ "$category" == "$HOME/.bash/plugins/post" ]]; then
     echo "[+] Packaing Post Section..."
+    final_result="$(pwd)/${category##*/}.tar.xz"
     _sash_package_subcategory "$category" "$run_checks"
-    return $?
-  fi
-  if [[ "${__sash_parse_results[full-category]}" == "0" ]]; then
-    echo "[+] Packaging Category: $category..."
-    _sash_package_category "$category" "$run_checks"
-    return $?
+
+    if [[ "$?" != "0" ]]; then
+      die "Failed to package subcategory!"
+    fi
+  else
+    if [[ "${__sash_parse_results[full-category]}" == "0" ]]; then
+      echo "[+] Packaging Category: $category..."
+      final_result="$(pwd)/${category##*/}.tar.xz"
+      _sash_package_category "$category" "$run_checks"
+
+      if [[ "$?" != "0" ]]; then
+        die "Failed to package subcategory!"
+      fi
+    else
+      if [[ "x${__sash_parse_results[subcategory]}" == "x" ]]; then
+        echo "[/] Please Choose a Subcategory to Package: "
+        subcategory="$(cd "$category" && _sash_choose_a_directory ".")"
+      else
+        subcategory="${__sash_parse_results[subcategory]}"
+      fi
+
+      local tmp_cat_subcat="$category/$subcategory"
+      echo "Packaging Subcategory: $tmp_cat_subcat"
+      final_result="$(pwd)/${tmp_cat_subcat##*/}.tar.xz"
+      _sash_package_subcategory "$tmp_cat_subcat" "$run_checks"
+
+      if [[ "$?" != "0" ]]; then
+        die "Failed to package!"
+      fi
+    fi
   fi
 
-  if [[ "x${__sash_parse_results[subcategory]}" == "x" ]]; then
-    echo "[/] Please Choose a Subcategory to Package: "
-    subcategory="$(cd "$category" && _sash_choose_a_directory ".")"
-  else
-    subcategory="${__sash_parse_results[subcategory]}"
+  if [[ "${__sash_parse_results[unsafe-no-sign]}" == "0" ]]; then
+    echo "[+] Generated unsafe, non signed package."
+    return 0
   fi
-  echo "Packaging Subcategory: $category/$subcategory"
-  _sash_package_subcategory "$category/$subcategory" "$run_checks"
-  return $?
+
+  if [[ "x${__sash_parse_results[keybase-user]}" != "x" ]]; then
+    local user="${__sash_parse_results[keybase-user]}"
+    echo "[+] Ensuring keybase user exists before signing."
+    keybase id "$user"
+    echo "[+] PGP Encrypting for user."
+    keybase pgp encrypt "$user" -i "$final_result" -o "${final_result}.asc"
+    rm "$final_result"
+    echo "[+] Encrypted. Encrypted tar.xz is at: ${final_result}.asc"
+    return 0
+  else
+    echo "[+] Creating signature file for package."
+    keybase pgp sign -i "$final_result" --detached > "sig.asc"
+    __sash_append_to_root_of_tar_xz "$final_result" "sig.asc"
+    rm "sig.asc"
+    keybase id 2>&1 | head -n1 | awk '{ print $NF }' | sed 's/\x1B\[[0-9;]\+[A-Za-z]//g' > "sig.usr"
+    __sash_append_to_root_of_tar_xz "$final_result" "sig.usr"
+    rm "sig.usr"
+  fi
 }
