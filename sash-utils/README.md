@@ -20,15 +20,6 @@ Colors.sh provides some constants for color'd logging.
 Dirs.sh provides a place to hang directory code that doesn't really fit
 anywhere else.
 
-## err-stack.sh ##
-
-Err-Stack.sh provides sort of some unique functions. It maintains a "stack"
-of functions for allowing to easily ignore: `set -e`, and enforce: `set -e`
-for specific functions. The idea is we can provide `set -e` on all of our
-bash scripts, but still allow specific functions to enforce it on/off.
-
-After all not every function plays by the same rule.
-
 ## sash-utils.sh ##
 
 Sources all of the other scripts.
