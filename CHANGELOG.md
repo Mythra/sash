@@ -1,3 +1,13 @@
+## Unreleased
+
+* Split out trap functionality to: `sash-trap`
+* Add Tests for `sash-err-stack`
+* Add Tests for `sash-parse`
+* Add Tests for `sash-trap`
+* Speed up `sash-parse` by multiple times.
+* Create: `sash <subcommand>` commands.
+* Basic Documentation for: `sash package` in README.
+
 ## 1.2.0 - (February 23rd, 2019)
 
 * Don't source `sash-parse.sh` before plugins load as plugins can overwrite that.

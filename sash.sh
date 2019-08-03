@@ -12,8 +12,9 @@
 # Subgroups are things within that, e.g. "Rust", and "Ruby" would be subgroups in "languages"
 
 EDITOR=${EDITOR:-vim}
-SASH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export SASH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+source "$SASH_DIR/sash-libs/sash-trap/sash-trap.sh"
 source "$SASH_DIR/sash-libs/sash-err-stack/sash-err-stack.sh"
 source "$SASH_DIR/sash-utils/sash-utils.sh"
 
@@ -100,9 +101,6 @@ if [[ -d "$HOME/.bash/plugins/post" ]]; then
 fi
 
 source "$SASH_DIR/sash-libs/sash-parse/sash-parse.sh"
-
-source "$SASH_DIR/sash-add.sh"
-source "$SASH_DIR/sash-show.sh"
-source "$SASH_DIR/sash-package.sh"
+source "$SASH_DIR/sash-command-handler.sh"
 
 export SASH_RUNNING=1

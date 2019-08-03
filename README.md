@@ -41,13 +41,13 @@ categories if you didn't manually create them first.
 
 ## Usage ##
 
-### sash_add ###
+### sash add ###
 
 Whenever you need to add something to your modularized bashrc instead of manually
 `mkdir && vim`'ing a file reach for `sash_add`:
 
 ```bash
-ecoan@kappa:~$ sash_add
+ecoan@kappa:~$ sash add
 Please Choose a Category:
 1) /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/utilities
 2) /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/work
@@ -70,7 +70,7 @@ to type the content you want to add the bashrc, and one for you to type comments
 (without the annoying '#' at the beginning of the line for long comments) so you can
 know what it is when coming back to it later.
 
-### sash_show ###
+### sash show ###
 
 If you're like me you've probably created a lot of individual files under a specific subcategory.
 To the point where you have so many files you don't want to manually cat them all out. Enter sash_show.
@@ -78,7 +78,7 @@ Sash show allows you to get a materialized view of an entire sub category so tha
 content is in it.
 
 ```bash
-ecoan@kappa:~$ sash_show
+ecoan@kappa:~$ sash show
 Please Choose a Category:
 1) /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/utilities
 2) /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/work
@@ -96,7 +96,7 @@ Please Choose a SubCategory:
 # adding some content to sash with multiple lines
 # for testing
 export SASH_TEST=1
-ecoan@kappa:~$ sash_show utilities/test
+ecoan@kappa:~$ sash show utilities test
 
 ###############################################################
 # Content from: /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/utilities/test//test.sh
@@ -107,6 +107,14 @@ ecoan@kappa:~$ sash_show utilities/test
 # for testing
 export SASH_TEST=1
 ```
+
+### sash package ###
+
+sash package is a tool for distributing parts (a category or subcategory) to
+other users. Not only that it signs the package using keybase for you so people
+can validate that it came from you.
+
+Simply run: `sash package`.
 
 ### sash_trace ###
 

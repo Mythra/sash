@@ -19,7 +19,7 @@ An example of all the flag types we support with sash-parse are below:
 Not to mention sash-parse also supports "STDIN" text which is text that appears after
 all flags. So for example:
 
-```
+```bash
 $ ARR=("a|apples")
 $ __sash_parse_args "-a=test $(echo "sup")" "${ARR[@]}"
 $ echo "${__sash_parse_results[__STDIN]}"
@@ -36,7 +36,7 @@ file that you can then read yourself.
 
 ## API ##
 
-```
+```bash
 # __sash_parse_args(to_parse: String, flags: Array<String>) -> Int
 #
 # Modifies Variables:
@@ -53,11 +53,12 @@ file that you can then read yourself.
 #   3 - User Spacing Error.
 #   4 - Got arg when expecting value.
 #   5 - Unknown Argument
+__sash_parse_args()
 ```
 
 An actual example:
 
-```
+```bash
 $ ARR=("a|apples" "b|bacon" "c|choco" "d|dark-choco" "e|eclair" "flags" "going" "home" "in" "j|jackets")
 $ __sash_parse_args "-a -b 10 -c \"is good\" -d=hey -e=\"a value with spaces\" --flags --going 10 --home \"or are they\" --in=10 --jackets=\"possibly maybe\"" "${ARR[@]}"
 $ echo "${!__sash_parse_results[@]}"

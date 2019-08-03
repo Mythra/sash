@@ -25,14 +25,14 @@ _sash_create_or_choose_subcategory() {
   fi
 }
 
-# sash_add() -> None
+# sash:add() -> None
 #
 # Modifies Variables:
 #   - _sash_add_filename
 #
 # allows the user to add content to their ~/.bashrc in a structured
 # and sensible way.
-sash_add() {
+sash:add() {
   __sash_guard_errors
 
   echo "Please Choose a Category: "
@@ -42,6 +42,7 @@ sash_add() {
     mkdir -p "$HOME/.bash/plugins/$_sash_add_filename"
     category="$HOME/.bash/plugins/$_sash_add_filename"
   fi
+
   local is_post="0"
   if [[ "$category" == "$HOME/.bash/plugins/post" ]]; then
     is_post="1"
@@ -50,14 +51,17 @@ sash_add() {
     local subcategory="$(_sash_create_or_choose_subcategory $category)"
     subcategory="${subcategory#./}"
   fi
+
   if ! _sash_get_multiline_input "# Please insert what you want to add to your bashrc below:" ""; then
     exit 1
   fi
   local content_to_add="$sash_multiline_content"
+
   if ! _sash_get_multiline_input "Please type what you want to be commented above this."; then
     exit 1
   fi
   local content_to_comment="$sash_multiline_content"
+
   echo "Current Files you can append to are:"
   if [[ "$is_post" == "1" ]]; then
     for _sash_show_existing_filename in $category/*; do
@@ -108,3 +112,10 @@ sash_add() {
   echo "[+] Added, and sourced!"
 }
 
+# sash_add()
+#
+# alias to sash:add
+sash_add() {
+  sash:add
+  return $?
+}

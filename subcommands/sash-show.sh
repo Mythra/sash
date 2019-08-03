@@ -45,14 +45,17 @@ _sash_materialize_view() {
 # Modifies Variables: None
 #
 # Implements the sash_show command.
-sash_show() {
+sash:show() {
   __sash_guard_errors
+
+  _args=$(__sash_split_str "$1" " ")
 
   if [[ -n "$1" ]]; then
     local full_category="$HOME/.bash/plugins/$1"
     if [[ ! -d $full_category ]]; then
       echo -e "${white}[${red}-${white}]${restore} Category: [$1] doesn't exist!"
     fi
+
     if [[ -n "$2" ]]; then
       _sash_materialize_view "$full_category" "$2"
     else
@@ -64,8 +67,10 @@ sash_show() {
         _sash_materialize_view "$full_category" "$choice"
       fi
     fi
+
     return
   fi
+
   echo "Please Choose a Category:"
   local category="$(_sash_choose_a_directory "$HOME/.bash/plugins/" 1)"
   if [[ "$category" == "$HOME/.bash/plugins/post" ]]; then
@@ -75,4 +80,11 @@ sash_show() {
     local choice="$(cd "$category" && _sash_choose_a_directory "." 1)"
     _sash_materialize_view "$category" "$choice"
   fi
+}
+
+# sash_show(category: Option<String>, subcategory: Option<String>) -> String
+#
+# alias to sash:show
+sash_show() {
+  sash:show "$@"
 }

@@ -29,11 +29,18 @@
 # S.A.S.H. is the main way to add things to your ~/.bashrc and still
 # maintain structure.
 
-if [[ "x$SASH_ERR_DIR" == "x" ]]; then
-  source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../sash-err-stack/sash-err-stack.sh"
-else
-  source "$SASH_ERR_DIR/sash-err-stack.sh"
+declare -f __sash_pop_err_mode_stack >/dev/null
+__sash_parse_intermediate_check="$?"
+
+if [[ "$__sash_parse_intermediate_check" == "1" ]]; then
+  if [[ "x$SASH_ERR_DIR" == "x" ]]; then
+    source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/../sash-err-stack/sash-err-stack.sh"
+  else
+    source "$SASH_ERR_DIR/sash-err-stack.sh"
+  fi
 fi
+
+unset __sash_parse_intermediate_check
 
 # __sash_strip_quotes(to_strip: String) -> String
 #
@@ -43,13 +50,13 @@ __sash_strip_quotes() {
   __sash_guard_errors
 
   local to_strip="$1"
-  if [[ "$to_strip" =~ ^\".*$ ]]; then
-    to_strip="$(echo "$to_strip" | cut -c 2-)"
+  if [[ "$to_strip" =~ ^\" ]]; then
+    to_strip="$(printf '%s' "$to_strip" | cut -c 2-)"
   fi
-  if [[ "$to_strip" =~ ^.*\"$ ]]; then
-    to_strip="$(echo "$to_strip" | rev | cut -c 2- | rev)"
+  if [[ "$to_strip" =~ \"$ ]]; then
+    to_strip="$(printf '%s' "$to_strip" | rev | cut -c 2- | rev)"
   fi
-  echo "$to_strip"
+  printf '%s' "$to_strip"
 }
 
 # __sash_split_str(string_to_split: String, split_by: String) -> Array<String>
@@ -61,31 +68,16 @@ __sash_strip_quotes() {
 __sash_split_str() {
   __sash_guard_errors
 
-  local to_split="$1"
-  local split_by="$2"
+  local readonly to_split="$1"
+  local readonly split_by="$2"
 
-  local trapped_sigint="$(_sash_get_trapped_text SIGINT)"
-  local trapped_sigquit="$(_sash_get_trapped_text SIGQUIT)"
-
-  local SAVEIFS="$IFS"
-  _sash_safe_add_to_trap "IFS=$SAVEIFS" "SIGINT"
-  _sash_safe_add_to_trap "IFS=$SAVEIFS" "SIGQUIT"
-  IFS=$split_by
-  local split
-  read -a split <<< "$to_split"
-  IFS=$SAVEIFS
-  if [[ "x$trapped_sigint" != "x" ]]; then
-    trap "$trapped_sigint" SIGINT
-  else
-    trap - SIGINT
-  fi
-  if [[ "x$trapped_sigquit" != "x" ]]; then
-    trap "$trapped_sigquit" SIGQUIT
-  else
-    trap - SIGQUIT
-  fi
-
-  printf '%s ' "${split[@]}"
+  ( \
+    SAVE_IFS="$IFS" && \
+    IFS="$split_by" && \
+    read -a split_text <<< "$to_split" && \
+    IFS="$SAVE_IFS" && \
+    printf '%s ' "${split_text[@]}" \
+  )
 }
 
 # __sash_check_duplicate__key(key_to_check: String, known_flags: Array<String>) -> Int
@@ -99,48 +91,44 @@ __sash_split_str() {
 __sash_check_duplicate_key() {
   __sash_guard_errors
 
-  local key_to_check="$1"
+  local readonly key_to_check="$1"
+  local split_provided_key=
+  local has_one=
   shift
-  local flags=("$@")
-  local iter
+  local readonly flags=("$@")
+  local iter=
 
-  local split_provided_key=($(__sash_split_str "$key_to_check" "|"))
+  if [[ "$key_to_check" =~ \| ]]; then
+    split_provided_key=($(__sash_split_str "$key_to_check" "|"))
+    has_one="false"
+  else
+    split_provided_key=("$key_to_check")
+    has_one="true"
+  fi
 
-  # For Each Flag We Know about.
   for iter in "${flags[@]}"; do
-    # Split the known flag up.
-    local split_known_flag=($(__sash_split_str "$iter" "|"))
-    # If the known flag only had it's long arg provided.
-    if [[ "${#split_known_flag[@]}" == "1" ]]; then
-      if [[ "${#split_provided_key[@]}" == "1" ]]; then
-        # If the key we're checking against only had it's long arg provided.
-        if [[ "${split_known_flag[0]}" == "${split_provided_key[0]}" ]]; then
+    if [[ "$iter" =~ \| ]]; then
+      local readonly split_known_flag=($(__sash_split_str "$iter" "|"))
+
+      if [[ "$has_one" == "true" ]]; then
+        if [[ "${split_provided_key[0]}" == "${split_known_flag[1]}" ]]; then
           return 1
         fi
       else
-        # Otherwise, Check the long key only.
-        if [[ "${split_known_flag[0]}" == "${split_provided_key[1]}" ]]; then
+        if [[ "${split_provided_key[0]}" == "${split_known_flag[0]}" ]] || [[ "${split_provided_key[1]}" == "${split_known_flag[1]}" ]]; then
           return 1
         fi
       fi
-
     else
-      # If the key we're checking against only has a long arg.
-      if [[ "${#split_provided_key[@]}" == "1" ]]; then
-        # Only check the long arg.
-        if [[ "${split_known_flag[1]}" == "${split_provided_key[0]}" ]]; then
+      if [[ "$has_one" == "true" ]]; then
+        if [[ "$iter" == "${split_provided_key[0]}" ]]; then
           return 1
         fi
       else
-        # Otherwise check both short, and long.
-        if [[ "${split_known_flag[0]}" == "${split_provided_key[0]}" ]]; then
-          return 1
-        fi
-        if [[ "${split_known_flag[1]}" == "${split_provided_key[1]}" ]]; then
+        if [[ "$iter" == "${split_provided_key[1]}" ]]; then
           return 1
         fi
       fi
-
     fi
   done
 
@@ -158,38 +146,33 @@ __sash_find_key_for_arg() {
 
   local key_to_attempt_a_match="$1"
   # Properly match: `-d=arg` arguments.
-  local split_by_equals=($(__sash_split_str "$key_to_attempt_a_match" "="))
-  key_to_attempt_a_match="${split_by_equals[0]}"
+  if [[ "$key_to_attempt_a_match" =~ = ]]; then
+    local readonly split_by_equals=($(__sash_split_str "$key_to_attempt_a_match" "="))
+    key_to_attempt_a_match="${split_by_equals[0]}"
+  fi
+
   shift
-  local flags=("$@")
-  local iter
+  local readonly flags=("$@")
+  local iter=
 
   # For Each Flag We Know about.
   for iter in "${flags[@]}"; do
     # Split the known flag up.
-    local split_known_flags=($(__sash_split_str "$iter" "|"))
+    if [[ "$iter" =~ \| ]]; then
+      local readonly split_known_flags=($(__sash_split_str "$iter" "|"))
 
-    if [[ "${#split_known_flags[@]}" == "1" ]]; then
-      if [[ "$key_to_attempt_a_match" =~ ^\-\-.*$ ]]; then
-        if [[ "$key_to_attempt_a_match" == "--${split_known_flags[0]}" ]]; then
-          echo "${split_known_flags[0]}"
-          return 0
-        fi
-      else
-        # This arg doesn't have a short flag and one was provided.
-        continue
+      if [[ "$key_to_attempt_a_match" == "--${split_known_flags[1]}" ]]; then
+        printf '%s' "${split_known_flags[1]}"
+        return 0
+      fi
+      if [[ "$key_to_attempt_a_match" == "-${split_known_flags[0]}" ]]; then
+        printf '%s' "${split_known_flags[1]}"
+        return 0
       fi
     else
-      if [[ "$key_to_attempt_a_match" =~ ^\-\-.*$ ]]; then
-        if [[ "$key_to_attempt_a_match" == "--${split_known_flags[1]}" ]]; then
-          echo "${split_known_flags[1]}"
-          return 0
-        fi
-      else
-        if [[ "$key_to_attempt_a_match" == "-${split_known_flags[0]}" ]]; then
-          echo "${split_known_flags[1]}"
-          return 0
-        fi
+      if [[ "$key_to_attempt_a_match" == "--${iter}" ]]; then
+        printf '%s' "${iter}"
+        return 0
       fi
     fi
   done
@@ -210,17 +193,24 @@ __sash_find_key_for_arg() {
 #   0 - No Error
 #   1 - Flag Provided was invalid in some way.
 #   2 - Subset of error code 1, flag was duplicated.
-#   3 - User Spacing Error.
+#   3 - Unused.
 #   4 - Got arg when expecting value.
 #   5 - Unknown Argument
 __sash_parse_args() {
   __sash_allow_errors
 
-  local to_parse_str="$1"
-  local to_parse=($(__sash_split_str "$to_parse_str" " "))
+  unset __sash_parse_results
+  declare -A -g __sash_parse_results
+
+  local readonly to_parse_str="$1"
+  local readonly to_parse=($(__sash_split_str "$to_parse_str" " "))
 
   # easiest way to parse the array is to just shift away the first arg.
   shift
+  # Check that we weren't just passed a string with an empty array.
+  if [[ "x$1" == "x" ]]; then
+    return 0
+  fi
 
   local flags=("$@")
   local provided_flag
@@ -228,21 +218,21 @@ __sash_parse_args() {
   local sash_known_flags=()
 
   for provided_flag in "${flags[@]}"; do
-    if [[ ! "$provided_flag" =~ [A-Za-z|-]+ ]]; then
-      echo "Invalid Argument Flag, Unknown Chars: [ $provided_flag ]!" >&2
+    if [[ ! "$provided_flag" =~ [A-Z0-9a-z\-]+ ]]; then
+      printf '%s\n' "Invalid Argument Flag, Unknown Chars: [ $provided_flag ]!" >&2
       return 1
     fi
 
-    local count_of_pipe="$(echo "$provided_flag" | tr -cd '|' | wc -c)"
+    local count_of_pipe="$(printf '%s' "$provided_flag" | tr -cd '|' | wc -c)"
     if [[ "$count_of_pipe" != "0" && "$count_of_pipe" != "1" ]]; then
-      echo "Invalid Argument Flag, Too Many Pipes: [ $provided_flag ], Count: [ $count_of_pipe ]!" >&2
+      printf '%s\n' "Invalid Argument Flag, Too Many Pipes: [ $provided_flag ], Count: [ $count_of_pipe ]!" >&2
       return 1
     fi
 
     __sash_check_duplicate_key "$provided_flag" "${sash_known_flags[@]}"
     local retV=$?
     if [[ "$retV" != "0" ]]; then
-      echo "Duplicate Flag: [ $provided_flag ]!" >&2
+      printf '%s\n' "Duplicate Flag: [ $provided_flag ]!" >&2
       return 2
     fi
 
@@ -263,9 +253,6 @@ __sash_parse_args() {
   local value_to_write_to=""
   local str_buffer=""
 
-  unset __sash_parse_results
-  declare -A -g __sash_parse_results
-
   local current_user_arg
   for current_user_arg in "${to_parse[@]}"; do
     if [[ "$state" == "3" ]]; then
@@ -274,21 +261,16 @@ __sash_parse_args() {
     fi
 
     if [[ "$state" == "2" ]]; then
-      if [[ "$current_user_arg" =~ .*\".* ]]; then
-        if [[ "$current_user_arg" =~ ^.*\"$ ]]; then
-          local stripped="$(__sash_strip_quotes "$current_user_arg")"
-          str_buffer="$str_buffer $stripped"
+      if [[ "$current_user_arg" =~ \"$ ]]; then
+        local stripped="$(__sash_strip_quotes "$current_user_arg")"
+        str_buffer="$str_buffer $stripped"
 
-          # Append to array
-          __sash_parse_results["$value_to_write_to"]="$str_buffer"
-          str_buffer=""
-          value_to_write_to=""
-          state=0
-          continue
-        else
-          echo "Ran into unknown state at str: [ $current_user_arg ]! Please seperate quoted strings from the next value with a space!" >&2
-          return 3
-        fi
+        # Append to array
+        __sash_parse_results["$value_to_write_to"]="$str_buffer"
+        str_buffer=""
+        value_to_write_to=""
+        state=0
+        continue
       else
         # If we don't contain a quote just add to buffer.
         str_buffer="$str_buffer $current_user_arg"
@@ -297,8 +279,8 @@ __sash_parse_args() {
     fi
 
     if [[ "$state" == "1" ]]; then
-      if [[ ! "$current_user_arg" =~ ^\-.*$ ]]; then
-        if [[ "$current_user_arg" =~ ^\".*$ ]]; then
+      if [[ ! "$current_user_arg" =~ ^\- ]]; then
+        if [[ "$current_user_arg" =~ ^\" ]]; then
           if [[ "$current_user_arg" =~ ^\".*\"$ ]]; then
             # If we end with a quote we have a full string.
             local stripped="$(__sash_strip_quotes "$current_user_arg")"
@@ -322,7 +304,7 @@ __sash_parse_args() {
       fi
     fi
 
-    if [[ "$current_user_arg" =~ ^\-.* ]]; then
+    if [[ "$current_user_arg" =~ ^\- ]]; then
       if [[ "$state" == "1" ]]; then
         __sash_parse_results["$value_to_write_to"]="0"
         state=0
@@ -332,7 +314,7 @@ __sash_parse_args() {
       local key_to_write_to="$(__sash_find_key_for_arg "$current_user_arg" "${sash_known_flags[@]}")"
 
       if [[ "x$key_to_write_to" == "x" ]]; then
-        echo "Unknown Arg: [ $current_user_arg ]!" >&2
+        printf '%s\n' "Unknown Arg: [ $current_user_arg ]!" >&2
         return 5
       fi
 
@@ -361,9 +343,9 @@ __sash_parse_args() {
           fi
         done
 
-        if [[ "$equal_sign_buff" =~ ^\".*$ ]]; then
+        if [[ "$equal_sign_buff" =~ ^\" ]]; then
           local stripped="$(__sash_strip_quotes "$equal_sign_buff")"
-          if [[ "$equal_sign_buff" =~ ^\".*\"$ ]]; then
+          if [[ "$equal_sign_buff" =~ \"$ ]]; then
             # We have a full string.
             __sash_parse_results["$key_to_write_to"]="$stripped"
             continue
@@ -381,7 +363,7 @@ __sash_parse_args() {
       fi
     else
       # No Start of an arg, must be in extra values passed in.
-      state=4
+      state=3
       if [[ "x$str_buffer" == "x" ]]; then
         str_buffer="$current_user_arg"
       else

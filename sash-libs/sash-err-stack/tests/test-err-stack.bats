@@ -23,3 +23,21 @@
   [ "$status" -eq "0" ]
   [ "${lines[0]}" = "hey" ]
 }
+
+@test "sash can be sourced multiple times" {
+  run $BATS_TEST_DIRNAME/test-cases/test-source-multiple-times.sh
+  [ "$status" -eq "0" ]
+}
+
+@test "sash recovers from error mode mixup" {
+  run $BATS_TEST_DIRNAME/test-cases/test-err-mode-mixup.sh
+  [ "$status" -eq "1" ]
+  [ "${lines[0]}" = "hey" ]
+  [ "${#lines[@]}" = "1" ]
+}
+
+@test "sash can source when error mode is set to true" {
+  run $BATS_TEST_DIRNAME/test-cases/test-can-be-sourced-in-err-mode.sh
+  [ "$status" -eq "1" ]
+  [ "${#lines[@]}" = "0" ]
+}

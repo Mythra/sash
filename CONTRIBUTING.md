@@ -4,6 +4,7 @@ I want to make contributing to this project as easy and transparent as
 possible.
 
 ## Pull Requests ##
+
 I actively welcome your pull requests.
 
 1. Fork the repo and create your branch from `master`.

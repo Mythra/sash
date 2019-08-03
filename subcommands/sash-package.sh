@@ -120,6 +120,11 @@ _sash_package_category() {
   return 0
 }
 
+# __sash_append_to_root_of_tar_xz(tarxz_file: string, file: string) -> None
+#
+# Modifies Globals: None
+#
+# append a particular file to a .tar.xz file.
 __sash_append_to_root_of_tar_xz() {
   __sash_guard_errors
 
@@ -135,12 +140,12 @@ __sash_append_to_root_of_tar_xz() {
   mv "$my_dir/tmp.tar.xz" "$tarxz_file"
 }
 
-# sash_package(args: Array<String>) -> Int
+# sash:package(args: Array<String>) -> Int
 #
-# sash_package will package up a category, or sub category for you to distribute to your
+# sash:package will package up a category, or sub category for you to distribute to your
 # friends. Note: Sash package will give you an option to filter out content for each file
 # incase of secrets, unless you specify: `--package-without-checks`.
-sash_package() {
+sash:package() {
   __sash_guard_errors
 
   local arguments="${@}"
@@ -166,12 +171,14 @@ sash_package() {
   if [[ "${__sash_parse_results[package-without-checks]}" == "0" ]]; then
     run_checks="0"
   fi
+
   if [[ "x${__sash_parse_results[category]}" == "x" ]]; then
     echo "[/] Please Choose a Category to Package: "
     category="$(_sash_choose_a_directory "$HOME/.bash/plugins/")"
   else
     category="$HOME/.bash/plugins/${__sash_parse_results[category]}"
   fi
+
   if [[ ! -d "$category" ]]; then
     echo -e "${white}[${red}-${white}]${restore} Category: [$1] doesn't exist!"
   fi
@@ -235,4 +242,12 @@ sash_package() {
     __sash_append_to_root_of_tar_xz "$final_result" "sig.usr"
     rm "sig.usr"
   fi
+}
+
+# sash_package()
+#
+# alias to sash:package
+sash_package() {
+  sash:package "$@"
+  return $?
 }

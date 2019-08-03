@@ -16,7 +16,8 @@ problems for other scripts around you. However, you still want the benefits
 `set -e` provides in order to ensure your script doesn't keep running. This
 is where `sash-err-stack` fits in.
 
-Dependencies: None
+Dependencies:
+  * Sash-Trap
 
 ## Sash-Parse ##
 
@@ -36,3 +37,13 @@ one you might expect inside of a full blown language (such as Go, Rust, etc.)
 
 Dependencies:
   * Sash-Err-Stack
+  * Sash-Trap (dependency of Sash-Err-Stack)
+
+## Sash-Trap ##
+
+`sash-trap` is a library built for "safely-handling" traps. More specifically
+built to get around the fact that the `trap` command by default, stomps all
+over a command that was previously in trap. Making it impossible, to actually
+recursively set traps without everyone knowing how to properly add to a trap.
+
+Dependencies: None
