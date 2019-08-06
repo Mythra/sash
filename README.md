@@ -47,11 +47,11 @@ Whenever you need to add something to your modularized bashrc instead of manuall
 `mkdir && vim`'ing a file reach for `sash_add`:
 
 ```bash
-ecoan@kappa:~$ sash add
+$ sash add
 Please Choose a Category:
-1) /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/utilities
-2) /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/work
-3) /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/language
+1) /home/<user>/.bash/plugins/utilities
+2) /home/<user>/.bash/plugins/work
+3) /home/<user>/.bash/plugins/language
 #? 1
 Please Choose a SubCategory:
 1) New
@@ -59,7 +59,7 @@ Please Choose a SubCategory:
 Please Enter the New Category Name: test
 Please Enter a filename to add this content to (should end in .sh): test.sh
 [+] Added, and sourced!
-ecoan@kappa:~$ cat ~/.bash/plugins/utilities/test/test.sh
+$ cat ~/.bash/plugins/utilities/test/test.sh
 # This is a test of sash
 # using multiline comments
 export SASH_TEST=1
@@ -78,28 +78,28 @@ Sash show allows you to get a materialized view of an entire sub category so tha
 content is in it.
 
 ```bash
-ecoan@kappa:~$ sash show
+$ sash show
 Please Choose a Category:
-1) /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/utilities
-2) /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/work
-3) /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/language
+1) /home/<user>/.bash/plugins/utilities
+2) /home/<user>/.bash/plugins/work
+3) /home/<user>/.bash/plugins/language
 #? 1
 Please Choose a SubCategory:
 1) ./test
 #? 1
 
 ###############################################################
-# Content from: /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/utilities/test/test.sh
+# Content from: /home/<user>/.bash/plugins/utilities/test/test.sh
 ###############################################################
 
 # This is an example of
 # adding some content to sash with multiple lines
 # for testing
 export SASH_TEST=1
-ecoan@kappa:~$ sash show utilities test
+$ sash show utilities test
 
 ###############################################################
-# Content from: /home/CORP.INSTRUCTURE.COM/ecoan/.bash/plugins/utilities/test//test.sh
+# Content from: /home/<user>/.bash/plugins/utilities/test//test.sh
 ###############################################################
 
 # This is an example of
