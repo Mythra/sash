@@ -44,7 +44,7 @@ categories if you didn't manually create them first.
 ### sash add ###
 
 Whenever you need to add something to your modularized bashrc instead of manually
-`mkdir && vim`'ing a file reach for `sash_add`:
+`mkdir && vim`'ing a file reach for `sash add`:
 
 ```bash
 $ sash add

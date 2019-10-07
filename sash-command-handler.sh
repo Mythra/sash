@@ -3,6 +3,7 @@
 source "$SASH_DIR/subcommands/sash-add.sh"
 source "$SASH_DIR/subcommands/sash-package.sh"
 source "$SASH_DIR/subcommands/sash-show.sh"
+source "$SASH_DIR/subcommands/sash-time.sh"
 
 SASH_ARGS=("h|help")
 
@@ -18,12 +19,16 @@ sash() {
     sash:add
     return $?
   fi
+  if [[ "${split_stdin[0]}" == "package" ]]; then
+    sash:package "${split_stdin[@]:1}"
+    return $?
+  fi
   if [[ "${split_stdin[0]}" == "show" ]]; then
     sash:show "${split_stdin[@]:1}"
     return $?
   fi
-  if [[ "${split_stdin[0]}" == "package" ]]; then
-    sash:package "${split_stdin[@]:1}"
+  if [[ "${split_stdin[0]}" == "time" ]]; then
+    sash:time
     return $?
   fi
 
@@ -32,13 +37,13 @@ Welcome to S.A.S.H.!
 
 S.A.S.H. offers the following subcommands:
 
-  * \`add\` - add something to your bashrc
-                                      (and automatically source it).
-  * \`show (category) (sub-category)\` - show the contents of a paritcular
-                                       subcategory.
+  * \`add\` - add something to your bashrc (and automatically source it).
   * \`package\` - package up a particular category
                 or subcategory for distribution to
                 others.
+  * \`show (category) (sub-category)\` - show the contents of a paritcular
+                                       subcategory.
+  * \`time\` - show the amount of time roughly it takes to source files.
 
 NOTE: anything between: \`()\` above denotes optional arguments.
 If you don't provide them, and they're needed, you will be asked inline.

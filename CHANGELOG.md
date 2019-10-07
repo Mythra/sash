@@ -7,6 +7,7 @@
 * Speed up `sash-parse` by multiple times.
 * Create: `sash <subcommand>` commands.
 * Basic Documentation for: `sash package` in README.
+* Add in: `sash time`, which allows seeing how long creating the shell took.
 
 ## 1.2.0 - (February 23rd, 2019)
 

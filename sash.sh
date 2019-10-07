@@ -14,6 +14,9 @@
 EDITOR=${EDITOR:-vim}
 export SASH_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# Used to grab timing info for how long sourcing each file took.
+declare -A -g __sash_timing_info
+
 source "$SASH_DIR/sash-libs/sash-trap/sash-trap.sh"
 source "$SASH_DIR/sash-libs/sash-err-stack/sash-err-stack.sh"
 source "$SASH_DIR/sash-utils/sash-utils.sh"
@@ -80,7 +83,10 @@ for __sash_loop_dir in "${_sash_category_dirs[@]}"; do
       [[ -x $__sash_filename ]] || continue
       [[ -n $SASH_TRACE ]] && echo "\n\nSourcing File: $__sash_filename\n\n"
       [[ -n $SASH_TRACE ]] && set -x
+      start_time="$SECONDS"
       source $__sash_filename
+      end_time="$SECONDS"
+      __sash_timing_info["$__sash_filename"]="$(( end_time - start_time ))"
       [[ -n $SASH_TRACE ]] && set +x
     done
   done
@@ -95,7 +101,10 @@ if [[ -d "$HOME/.bash/plugins/post" ]]; then
     [[ -x "$__sash_filename" ]] || continue
     [[ -n $SASH_TRACE ]] && echo "\n\nSourcing File: $__sash_filename\n\n"
     [[ -n $SASH_TRACE ]] && set -x
+    start_time="$SECONDS"
     source $__sash_filename
+    end_time="$SECONDS"
+    __sash_timing_info["$__sash_filename"]="$(( end_time - start_time ))"
     [[ -n $SASH_TRACE ]] && set +x
   done
 fi
