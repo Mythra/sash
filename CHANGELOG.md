@@ -1,5 +1,7 @@
 ## Unreleased
 
+## 1.3.0 (October 14th, 2019)
+
 * Split out trap functionality to: `sash-trap`
 * Add Tests for `sash-err-stack`
 * Add Tests for `sash-parse`
