@@ -116,6 +116,19 @@ can validate that it came from you.
 
 Simply run: `sash package`.
 
+### sash time ###
+
+sash time is a tool for detecting what is taking so long in your shell startup.
+sash time simply gives you an overview of how many seconds (more or less) it
+took to load each file in your shell.
+
+NOTE: this uses the bash builtin: `$SECONDS` which is techincally not readonly,
+if you have an unbehaved shell script it's time + the global time will be
+reported incorrectly. Please don't abuse seconds.
+
+Simply run `sash time`, to get a formatted output of the time things to load
+down to the second granularity.
+
 ### sash_trace ###
 
 If you aren't able to find out where a particular command is executing (or you want to see which
