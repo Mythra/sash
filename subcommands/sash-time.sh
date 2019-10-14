@@ -16,12 +16,8 @@ sash:time() {
   local key=
   for key in "${keys[@]}"; do
     local time_taken_in_seconds="${__sash_timing_info["$key"]}"
-    if [[ "$time_taken_in_seconds" == "0" ]]; then
-      time_taken_in_seconds="<1"
-    fi
-
     echo "$key, took about: $time_taken_in_seconds second(s) to load into your shell."
-  done
+  done | sort -k4,4nr -k1,1
 }
 
 # sash_time()

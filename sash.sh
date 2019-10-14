@@ -73,6 +73,7 @@ if [[ "$(_is_first_sash_run)" -eq "0" ]]; then
   echo -e "${white}[${green}+${white}]${restore} S.A.S.H. has been setup!"
 fi
 
+__sash_global_startup_time="$SECONDS"
 export SASH_LOADING=1
 
 _sash_category_dirs=( $(find "$HOME/.bash/plugins/" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$" | grep -v "^post$") )
@@ -112,4 +113,6 @@ fi
 source "$SASH_DIR/sash-libs/sash-parse/sash-parse.sh"
 source "$SASH_DIR/sash-command-handler.sh"
 
+__sash_global_end_time="$SECONDS"
+__sash_timing_info["Sash Total Time"]="$(( __sash_global_end_time - __sash_global_startup_time ))"
 export SASH_RUNNING=1
