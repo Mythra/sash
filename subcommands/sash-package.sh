@@ -158,7 +158,8 @@ sash:package() {
 
   if [[ "${__sash_parse_results[unsafe-no-sign]}" != "0" ]]; then
     if ! hash keybase 2>/dev/null; then
-      die "Please install the Keybase CLI for generating packages."
+      (>&2 echo "Please install the Keybase CLI for generating packages.")
+      exit 10
     fi
   fi
 
@@ -189,7 +190,8 @@ sash:package() {
     _sash_package_subcategory "$category" "$run_checks"
 
     if [[ "$?" != "0" ]]; then
-      die "Failed to package subcategory!"
+      (>&2 echo "Failed to package subcategory!")
+      exit 10
     fi
   else
     if [[ "${__sash_parse_results[full-category]}" == "0" ]]; then
@@ -198,7 +200,8 @@ sash:package() {
       _sash_package_category "$category" "$run_checks"
 
       if [[ "$?" != "0" ]]; then
-        die "Failed to package subcategory!"
+        (>&2 echo "Failed to package subcategory!")
+        exit 10
       fi
     else
       if [[ "x${__sash_parse_results[subcategory]}" == "x" ]]; then
@@ -214,7 +217,8 @@ sash:package() {
       _sash_package_subcategory "$tmp_cat_subcat" "$run_checks"
 
       if [[ "$?" != "0" ]]; then
-        die "Failed to package!"
+        (>&2 echo "Failed to package!")
+        exit 10
       fi
     fi
   fi

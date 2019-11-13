@@ -14,7 +14,8 @@
 # Instead you should be using something like:
 # ```sh
 # if ! _sash_get_multiline_content; then
-#   die "bleh"
+#   (>&2 echo "BLAH")
+#   return 10
 # fi
 # ```
 _sash_get_multiline_input() {

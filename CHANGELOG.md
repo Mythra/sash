@@ -1,5 +1,7 @@
 ## Unreleased
 
+* Remove `die` function which it turns out isn't universal.
+
 ## 1.3.0 (October 14th, 2019)
 
 * Split out trap functionality to: `sash-trap`
