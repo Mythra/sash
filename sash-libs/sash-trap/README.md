@@ -1,8 +1,9 @@
 # Sash-Trap #
 
-sash-trap gives you the ability to "safely" add to traps, recursively. `trap`
-ends up overwriting everything which can be quite unpleasent when you're being
-called from a script that needs traps (and you have to respect their traps).
+sash-trap gives you the ability to "safely" add to traps, recursively. the
+`trap` command ends up overwriting everything which can be quite unpleasent
+when you're being called from a script that needs traps
+(and you have to respect their traps).
 
 sash-trap works around that by automatically detecting previously set traps,
 and "safely" adding to them by seperating commands with: `;` (even if the
@@ -10,7 +11,7 @@ user didn't add one themselves.)
 
 ## Supported Architectures ##
 
-* Bash v3 compatible, but only tested with Bash v4.
+* Anything running Bashv4 or greater.
 
 ## API ##
 
@@ -21,6 +22,13 @@ user didn't add one themselves.)
 #
 # parses trap output to get you the command for a signal.
 _sash_get_trapped_text()
+
+# _sash_set_trapped_text(command: String, signal: String)
+#
+# Modifies Variables: None
+#
+# Wrapper around the trap command, properly respecting empty strings.
+_sash_set_trapped_text()
 
 # _sash_safe_add_to_trap(command: String, signal: String)
 #
@@ -41,13 +49,8 @@ E.g. something like:
 
 ```
 to_restore=$(_sash_get_trapped_text "SIGINT")
-_sash_safe_add_to_trap "SIGINT" "printf '%s' 'sigint hit'"
-
-(echo 'blah blah')
-
-if [[ "x$to_restore" != "x" ]]; then # Can't trap an empty string.
-  trap "$to_restore" SIGINT
-else
-  trap - SIGINT
-fi
+_sash_safe_add_to_trap "printf '%s' 'sigint hit'" "SIGINT"
+echo "$(trap -p SIGINT)"
+_sash_set_trapped_text "$to_restore" "SIGINT"
+echo "$(trap -p SIGINT)"
 ```

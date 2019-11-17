@@ -73,7 +73,7 @@ know what it is when coming back to it later.
 ### sash show ###
 
 If you're like me you've probably created a lot of individual files under a specific subcategory.
-To the point where you have so many files you don't want to manually cat them all out. Enter sash_show.
+To the point where you have so many files you don't want to manually cat them all out. Enter `sash show`.
 Sash show allows you to get a materialized view of an entire sub category so that way you know exactly what
 content is in it.
 

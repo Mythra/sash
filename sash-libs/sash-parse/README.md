@@ -1,7 +1,10 @@
 # Sash-Parse #
 
 sash-parse is a full CLI argument parser built in bash. Meant to be
-a rather simplistic parser that feels famaliar to an end user.
+a rather simplistic parser that feels famaliar to an end user. This was
+originally built because Mac OS-X "getopt" does not support "long" flags
+(e.g. flags that begin with: `--`). Not to mention getopt is generally
+clunky to work with.
 
 An example of all the flag types we support with sash-parse are below:
 
@@ -26,13 +29,15 @@ $ echo "${__sash_parse_results[__STDIN]}"
 sup
 ```
 
-Although it should be noted, multiline text within the __STDIN field
+***NOTE: multiline text within the __STDIN field
 is likely to break. We recommend you just have the user give you a path to a
-file that you can then read yourself.
+file that you can then read yourself.***
+
+***NOTE: if you need to support an extra arg type please file an issue.***
 
 ## Supported Architectures ##
 
-* Anything running Bashv4. (Needed for "associative-arrays").
+* Anything running Bashv4 or greater.
 
 ## API ##
 
@@ -44,7 +49,7 @@ file that you can then read yourself.
 #
 # Parses the arguments you need to parse, and writes results as an associative array with the name: "__sash_parse_results".
 # Use the return value to check if there was an error (non-zero value).
-# All results are written using the "long-name".
+# All results are written using the "long-name" of the flag.
 #
 # Error Codes:
 #   0 - No Error
@@ -86,3 +91,18 @@ $ echo "${__sash_parse_results[bacon]}"
 $ echo "${__sash_parse_results[dark-choco]}"
 hey
 ```
+
+### Performance Note ###
+
+It should be noted sash-parse _attempts_ to execute at a reasonable speed
+(less than half a second for running the input above in a subshell, and
+checking the results of variables).
+
+It does this _most_ of the time, and most of the time is under 300ms for this
+input. However bash has been known to make this number highly fluctuate. We've
+seen execution times of: < 100ms to ~620ms.
+
+If you need specific performance with bash (for what I don't know), this
+probably isn't the most ideal script for you. Though feel free to reach out
+about it. I'd be super curious what set of circumstances led you needing
+fast executing bash, and not being able to use anything else.

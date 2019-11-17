@@ -10,7 +10,7 @@ The libraries themselves are listed below.
 
 ## Sash-Err-Stack ##
 
-`sash-err-stack` is a library for controlling `set -e` state. Unfortunately if
+`sash-err-stack` is a library for controlling `set -e` state. If
 you're a library like sash, you can't just: `set -e`, since that causes
 problems for other scripts around you. However, you still want the benefits
 `set -e` provides in order to ensure your script doesn't keep running. This
