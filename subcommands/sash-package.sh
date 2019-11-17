@@ -248,10 +248,27 @@ sash:package() {
   fi
 }
 
+# sash:package:wrap() -> None
+#
+# Wraps sash:package in a subshell to ensure the shell is not exited.
+sash:package:wrap() {
+  __sash_allow_errors
+
+  ( \
+    sash:package "$@" \
+  )
+
+  local readonly rc="$?"
+  if [[ "$rc" -ne "0" ]]; then
+    (>&2 echo -e "Failed to run sash:package!")
+  fi
+  return "$rc"
+}
+
 # sash_package()
 #
-# alias to sash:package
+# alias to sash:package:wrap
 sash_package() {
-  sash:package "$@"
+  sash:package:wrap "$@"
   return $?
 }

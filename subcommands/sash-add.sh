@@ -112,10 +112,27 @@ sash:add() {
   echo "[+] Added, and sourced!"
 }
 
+# sash:add:wrap() -> None
+#
+# Wraps sash:add in a subshell to ensure the shell is not exited.
+sash:add:wrap() {
+  __sash_allow_errors
+
+  ( \
+    sash:add \
+  )
+
+  local readonly rc="$?"
+  if [[ "$rc" -ne "0" ]]; then
+    (>&2 echo -e "Failed to run sash:add!")
+  fi
+  return "$rc"
+}
+
 # sash_add()
 #
 # alias to sash:add
 sash_add() {
-  sash:add
+  sash:add:wrap
   return $?
 }

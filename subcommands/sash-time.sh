@@ -11,6 +11,8 @@
 #
 # prints out timing info gathered during startup.
 sash:time() {
+  __sash_guard_errors
+
   local readonly keys=("${!__sash_timing_info[@]}")
 
   local key=
@@ -20,10 +22,29 @@ sash:time() {
   done | sort -k4,4nr -k1,1
 }
 
+# sash:time:wrap() -> None
+#
+# Modifies Variables: None
+#
+# Wraps sash:time in a subshell to ensure the shell is not exited.
+sash:time:wrap() {
+  __sash_allow_errors
+
+  (           \
+    sash:time \
+  )
+
+  local readonly rc="$?"
+  if [[ "$rc" -ne "0" ]]; then
+    (>&2 echo -e "Failed to run sash:time!")
+  fi
+  return "$rc"
+}
+
 # sash_time()
 #
-# alias to sash:time
+# alias to sash:time:wrap
 sash_time() {
-  sash:time
+  sash:time:wrap
   return $?
 }

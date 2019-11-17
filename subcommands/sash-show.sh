@@ -82,9 +82,26 @@ sash:show() {
   fi
 }
 
+# sash:show:wrap() -> None
+#
+# Wraps sash:show in a subshell to ensure the shell is not exited.
+sash:show:wrap() {
+  __sash_allow_errors
+
+  ( \
+    sash:show "$@" \
+  )
+
+  local readonly rc="$?"
+  if [[ "$rc" -ne "0" ]]; then
+    (>&2 echo -e "Failed to run sash:show!")
+  fi
+  return "$rc"
+}
+
 # sash_show(category: Option<String>, subcategory: Option<String>) -> String
 #
-# alias to sash:show
+# alias to sash:show:wrap
 sash_show() {
-  sash:show "$@"
+  sash:show:wrap "$@"
 }

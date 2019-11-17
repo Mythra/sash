@@ -6,6 +6,9 @@
     prevent the need to spawn subshells.
   - Make some scripts a bit easier to read by removing nesting
     branches.
+* Introduce "wrap" functions for sash commands so they don't just
+  cause your shell to randomly exit, leaving you in an undiagnosed
+  state.
 
 ## 1.3.0 (October 14th, 2019)
 

@@ -16,19 +16,19 @@ sash() {
   local split_stdin=($(__sash_split_str "${__sash_parse_results[__STDIN]}" " "))
 
   if [[ "${split_stdin[0]}" == "add" ]]; then
-    sash:add
+    sash:add:wrap
     return $?
   fi
   if [[ "${split_stdin[0]}" == "package" ]]; then
-    sash:package "${split_stdin[@]:1}"
+    sash:package:wrap "${split_stdin[@]:1}"
     return $?
   fi
   if [[ "${split_stdin[0]}" == "show" ]]; then
-    sash:show "${split_stdin[@]:1}"
+    sash:show:wrap "${split_stdin[@]:1}"
     return $?
   fi
   if [[ "${split_stdin[0]}" == "time" ]]; then
-    sash:time
+    sash:time:wrap
     return $?
   fi
 
