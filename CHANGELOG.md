@@ -1,6 +1,11 @@
 ## Unreleased
 
 * Remove `die` function which it turns out isn't universal.
+* Minor improvements to sash-err-stack + sash-parse + sash-trap
+  - Locks more into bashv4 with specific bashv4 features that
+    prevent the need to spawn subshells.
+  - Make some scripts a bit easier to read by removing nesting
+    branches.
 
 ## 1.3.0 (October 14th, 2019)
 

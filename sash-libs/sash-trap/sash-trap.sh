@@ -20,14 +20,12 @@ _sash_safe_add_to_trap() {
   local command_to_add="$1"
   local signal="$2"
 
-  if [[ "x$(trap -p "$signal")" == "x" ]]; then
+  local trapped_text="$(_sash_get_trapped_text "$signal")"
+  if [[ "x$trapped_text" == "x" ]]; then
     trap "$command_to_add" "$signal"
+  elif [[ ! "$trapped_text" =~ \;$ ]]; then
+    trap "$trapped_text; $command_to_add;" "$signal"
   else
-    local trapped_text="$(_sash_get_trapped_text "$signal")"
-    if [[ ! "$trapped_text" =~ \;$ ]]; then
-      trap "$trapped_text; $command_to_add;" "$signal"
-    else
-      trap "$trapped_text $command_to_add;" "$signal"
-    fi
+    trap "$trapped_text $command_to_add;" "$signal"
   fi
 }

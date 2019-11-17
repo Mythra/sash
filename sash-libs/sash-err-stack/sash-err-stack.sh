@@ -39,7 +39,8 @@ __sash_intermediate_check="$?"
 
 if [[ "$__sash_intermediate_check" == "1" ]]; then
 
-_sash_global_err_mode_stack=()
+_sash_global_err_mode_stack_key=()
+_sash_global_err_mode_stack_value=()
 
 # __sash_reset_initial_stack()
 #
@@ -65,7 +66,8 @@ __sash_reset_initial_stack() {
 #
 # Pushes onto the error stack.
 __sash_push_err_mode_stack() {
-  _sash_global_err_mode_stack=("${_sash_global_err_mode_stack[@]}" "$1|$2")
+  _sash_global_err_mode_stack_key=("${_sash_global_err_mode_stack_key[@]}" "$1")
+  _sash_global_err_mode_stack_value=("${_sash_global_err_mode_stack_value[@]}" "$2")
 
   if [[ "$2" == "1" ]]; then
     set -e
@@ -86,30 +88,31 @@ __sash_push_err_mode_stack() {
 __sash_pop_err_mode_stack() {
   local readonly func_name="${FUNCNAME[1]}"
 
-  local readonly stack_size="${#_sash_global_err_mode_stack[@]}"
-  local readonly stack_le_index=$(( stack_size - 1 ))
+  local readonly stack_size="${#_sash_global_err_mode_stack_key[@]}"
   if [[ "$stack_size" == "0" ]]; then
     return 0
   fi
+  local readonly stack_le_index=$(( stack_size - 1 ))
 
-  local readonly stack_last_element="${_sash_global_err_mode_stack[$stack_le_index]}"
-  local readonly stack_split_name=(${stack_last_element//|/\ })
-  if [[ "${stack_split_name[0]}" == "$func_name" ]]; then
+  local readonly stack_last_element="${_sash_global_err_mode_stack_key[$stack_le_index]}"
+  if [[ "$stack_last_element" == "$func_name" ]]; then
     if [[ "$stack_size" == "1" ]]; then
       __sash_reset_initial_stack
-      _sash_global_err_mode_stack=()
+      _sash_global_err_mode_stack_key=()
+      _sash_global_err_mode_stack_value=()
       return 0
     fi
 
-    if [[ "${stack_split_name[1]}" == "1" ]]; then
+    if [[ "${_sash_global_err_mode_stack_value[$stack_le_index]}" == "1" ]]; then
       set +e
     else
       set -e
     fi
 
-    _sash_global_err_mode_stack=(${_sash_global_err_mode_stack[@]:0:$stack_le_index})
+    unset '_sash_global_err_mode_stack_key[-1]'
+    unset '_sash_global_err_mode_stack_value[-1]'
   else
-    if [[ "${stack_split_name[1]}" == "1" ]]; then
+    if [[ "${_sash_global_err_mode_stack_value[$stack_le_index]}" == "1" ]]; then
       set -e
     else
       set +e

@@ -49,14 +49,11 @@ unset __sash_parse_intermediate_check
 __sash_strip_quotes() {
   __sash_guard_errors
 
-  local to_strip="$1"
-  if [[ "$to_strip" =~ ^\" ]]; then
-    to_strip="$(printf '%s' "$to_strip" | cut -c 2-)"
-  fi
-  if [[ "$to_strip" =~ \"$ ]]; then
-    to_strip="$(printf '%s' "$to_strip" | rev | cut -c 2- | rev)"
-  fi
-  printf '%s' "$to_strip"
+  local readonly to_strip="$1"
+  local readonly stripped_begin="${to_strip%\"}"
+  local readonly fully_stripped="${stripped_begin#\"}"
+
+  printf '%s' "$fully_stripped"
 }
 
 # __sash_split_str(string_to_split: String, split_by: String) -> Array<String>
@@ -72,10 +69,8 @@ __sash_split_str() {
   local readonly split_by="$2"
 
   ( \
-    SAVE_IFS="$IFS" && \
     IFS="$split_by" && \
     read -a split_text <<< "$to_split" && \
-    IFS="$SAVE_IFS" && \
     printf '%s ' "${split_text[@]}" \
   )
 }
@@ -92,19 +87,15 @@ __sash_check_duplicate_key() {
   __sash_guard_errors
 
   local readonly key_to_check="$1"
-  local split_provided_key=
-  local has_one=
-  shift
-  local readonly flags=("$@")
-  local iter=
-
-  if [[ "$key_to_check" =~ \| ]]; then
-    split_provided_key=($(__sash_split_str "$key_to_check" "|"))
-    has_one="false"
-  else
-    split_provided_key=("$key_to_check")
+  local split_provided_key=($(__sash_split_str "$key_to_check" "|"))
+  local has_one="false"
+  if [[ "${#split_provided_key[@]}" == "1" ]]; then
     has_one="true"
   fi
+  shift
+
+  local readonly flags=("$@")
+  local iter=
 
   for iter in "${flags[@]}"; do
     if [[ "$iter" =~ \| ]]; then
@@ -145,37 +136,41 @@ __sash_find_key_for_arg() {
   __sash_guard_errors
 
   local key_to_attempt_a_match="$1"
+  local is_short_match="true"
   # Properly match: `-d=arg` arguments.
   if [[ "$key_to_attempt_a_match" =~ = ]]; then
     local readonly split_by_equals=($(__sash_split_str "$key_to_attempt_a_match" "="))
     key_to_attempt_a_match="${split_by_equals[0]}"
+  fi
+  if [[ "$key_to_attempt_a_match" =~ ^--.* ]]; then
+    is_short_match="false"
   fi
 
   shift
   local readonly flags=("$@")
   local iter=
 
-  # For Each Flag We Know about.
-  for iter in "${flags[@]}"; do
-    # Split the known flag up.
-    if [[ "$iter" =~ \| ]]; then
-      local readonly split_known_flags=($(__sash_split_str "$iter" "|"))
-
-      if [[ "$key_to_attempt_a_match" == "--${split_known_flags[1]}" ]]; then
-        printf '%s' "${split_known_flags[1]}"
-        return 0
+  if [[ "$is_short_match" == "true" ]]; then
+    for iter in "${flags[@]}"; do
+      if [[ "$key_to_attempt_a_match" =~ ^-${iter} ]]; then
+        if [[ "$iter" =~ \| ]]; then
+          printf '%s' "$(echo -n "$iter" | sed 's,.*|,,g')"
+        else
+          printf '%s' "$iter"
+        fi
       fi
-      if [[ "$key_to_attempt_a_match" == "-${split_known_flags[0]}" ]]; then
-        printf '%s' "${split_known_flags[1]}"
-        return 0
+    done
+  else
+    for iter in "${flags[@]}"; do
+      if [[ "$key_to_attempt_a_match" =~ --${iter}$ ]]; then
+        if [[ "$iter" =~ \| ]]; then
+          printf '%s' "$(echo -n "$iter" | sed 's,.*|,,g')"
+        else
+          printf '%s' "$iter"
+        fi
       fi
-    else
-      if [[ "$key_to_attempt_a_match" == "--${iter}" ]]; then
-        printf '%s' "${iter}"
-        return 0
-      fi
-    fi
-  done
+    done
+  fi
 
   return 1
 }
