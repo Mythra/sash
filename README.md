@@ -136,3 +136,5 @@ command is taking awhile to execute), you can set `SASH_TRACE=1` in your bashrc 
 line. This will turn sash in "debug mode" which prints out every command that is executed, and from which file it's
 being execute from.
 
+NOTE: you can use `sash time` to find out what script took how many seconds to get a high level idea. It does
+not require opt-in like sash_trace does.
