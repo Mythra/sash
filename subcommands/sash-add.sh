@@ -126,6 +126,8 @@ sash:add:wrap() {
   if [[ "$rc" -ne "0" ]]; then
     (>&2 echo -e "Failed to run sash:add!")
   fi
+  # Trigger reload
+  source "$HOME/.bashrc"
   return "$rc"
 }
 
