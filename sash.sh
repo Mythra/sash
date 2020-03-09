@@ -21,6 +21,18 @@ source "$SASH_DIR/sash-libs/sash-trap/sash-trap.sh"
 source "$SASH_DIR/sash-libs/sash-err-stack/sash-err-stack.sh"
 source "$SASH_DIR/sash-utils/sash-utils.sh"
 
+export SASH_IS_WINDOWS=0
+case "$(uname -s)" in
+  CYGWIN*)
+    SASH_IS_WINDOWS=1
+    ;;
+  MINGW*)
+    SASH_IS_WINDOWS=1
+    ;;
+  *)
+    ;;
+esac
+
 # _sash_init_categories() -> None
 #
 # Modifies Variables:
@@ -81,7 +93,7 @@ for __sash_loop_dir in "${_sash_category_dirs[@]}"; do
   _sash_subcategory_dirs=( $(find "$HOME/.bash/plugins/$__sash_loop_dir" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$") )
   for __sash_loop_sub_dir in "${_sash_subcategory_dirs[@]}"; do
     for __sash_filename in $HOME/.bash/plugins/$__sash_loop_dir/$__sash_loop_sub_dir/*.sh; do
-      [[ -x $__sash_filename ]] || continue
+      [[ -x $__sash_filename ]] || [ "$SASH_IS_WINDOWS" -eq 1 ] || continue
       [[ -n $SASH_TRACE ]] && echo "\n\nSourcing File: $__sash_filename\n\n"
       [[ -n $SASH_TRACE ]] && set -x
       start_time="$SECONDS"
@@ -99,7 +111,7 @@ export SASH_LOADED=1
 
 if [[ -d "$HOME/.bash/plugins/post" ]]; then
   for __sash_filename in $HOME/.bash/plugins/post/*.sh; do
-    [[ -x "$__sash_filename" ]] || continue
+    [[ -x "$__sash_filename" ]] || [ "$SASH_IS_WINDOWS" -eq 1 ] || continue
     [[ -n $SASH_TRACE ]] && echo "\n\nSourcing File: $__sash_filename\n\n"
     [[ -n $SASH_TRACE ]] && set -x
     start_time="$SECONDS"

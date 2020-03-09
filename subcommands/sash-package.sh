@@ -26,7 +26,7 @@ _sash_package_subcategory() {
 
   local filename=""
   for filename in $full_category_path/*.sh; do
-    [[ -x $filename ]] || continue
+    [[ -x $filename ]] || [ "$SASH_IS_WINDOWS" -eq 1 ] || continue
 
     if [[ "$run_checks" == "1" ]]; then
       local options=("YES" "NO")
@@ -85,7 +85,7 @@ _sash_package_category() {
   for subcategory in "${subcategories[@]}"; do
     mkdir -p "$temp_dir/$subcategory"
     for filename in $full_category_path/$subcategory/*.sh; do
-      [[ -x $filename ]] || continue
+      [[ -x $filename ]] || [ "$SASH_IS_WINDOWS" -eq 1 ] || continue
 
       if [[ "$run_checks" == "1" ]]; then
         local options=("YES" "NO")

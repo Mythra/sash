@@ -9,6 +9,8 @@
 * Introduce "wrap" functions for sash commands so they don't just
   cause your shell to randomly exit, leaving you in an undiagnosed
   state.
+* Allow sash to work on windows by adding an option to not check the executable
+  bit.
 
 ## 1.3.0 (October 14th, 2019)
 
@@ -54,4 +56,3 @@
 ## 1.0.0 (Feburary 28th, 2018)
 
 * Initial Release of SASH.
-

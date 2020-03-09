@@ -30,7 +30,7 @@ _sash_materialize_view() {
   fi
 
   for filename in $dir/*.sh; do
-    [[ -x $filename ]] || continue
+    [[ -x $filename ]] || [ "$SASH_IS_WINDOWS" -eq 1 ] || continue
     echo ""
     echo "###############################################################"
     echo "# Content from: $filename"
