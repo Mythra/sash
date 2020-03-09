@@ -81,6 +81,8 @@ if [[ "$(_is_first_sash_run)" -eq "0" ]]; then
   _sash_init_categories
   touch "$HOME/.bash/plugins/init-sash"
   mkdir -p "$HOME/.bash/plugins/post"
+  echo "# Kept so certain bash shells don't error out when no files in post directory." > "$HOME/.bash/plugins/post/keep.sh"
+  chmod +x "$HOME/.bash/plugins/post/keep.sh"
   echo ""
   echo -e "${white}[${green}+${white}]${restore} S.A.S.H. has been setup!"
 fi
