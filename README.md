@@ -26,7 +26,7 @@ Installing sash for the first run is easy (the migration will take some time tho
 Simply clone this repo:
 
 ```
-$ git clone https://github.com/SecurityInsanity/sash
+$ git clone https://github.com/Mythra/sash
 ```
 
 Then add the sash script to your .bashrc (this should be the only thing in there

@@ -218,7 +218,7 @@ __sash_parse_args() {
       return 1
     fi
 
-    local count_of_pipe="$(printf '%s' "$provided_flag" | tr -cd '|' | wc -c)"
+    local count_of_pipe="$(printf '%s' "$provided_flag" | tr -cd '|' | wc -c | xargs)"
     if [[ "$count_of_pipe" != "0" && "$count_of_pipe" != "1" ]]; then
       printf '%s\n' "Invalid Argument Flag, Too Many Pipes: [ $provided_flag ], Count: [ $count_of_pipe ]!" >&2
       return 1

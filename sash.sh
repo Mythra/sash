@@ -66,6 +66,51 @@ _is_first_sash_run() {
   fi
 }
 
+# __ensure_find_type()
+#
+# Modifies Variables:
+#  - SASH_FIND_FLAVOR
+#
+# Determines the sash find flavor (gnu/bsd)
+__ensure_find_type() {
+  if [[ "x$SASH_FIND_FLAVOR" == "x" ]]; then
+    if find "$HOME/.bash/plugins/" -maxdepth 1 -type d -printf '%P\n' >/dev/null 2>&1 ; then
+      export SASH_FIND_FLAVOR="gnu"
+    else
+      export SASH_FIND_FLAVOR="bsd"
+    fi
+  fi
+}
+
+# __grab_initial_files()
+#
+# Modifies Variables: None
+#
+# Grab an array of the initial directories to scan for plugins.
+__grab_initial_files() {
+  __ensure_find_type
+  if [[ "$SASH_FIND_FLAVOR" == "gnu" ]] ; then
+    find "$HOME/.bash/plugins/" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$" | grep -v "^post$"
+  else
+    find . -type f -print0 | xargs -0r stat -f '%R' | grep -v "^\.$" | grep -v "^\.\.^" | grep -v "^$" | grep -v "^post$"
+  fi
+}
+
+# __grab_subdir_files()
+#
+# Modifies Variables:
+#  - __sash_loop_dir: expects to be set
+#
+# Grabs all of the directories under a category.
+__grab_subdir_files() {
+  __ensure_find_type
+  if [[ "$SASH_FIND_FLAVOR" == "gnu" ]]; then
+    find "$HOME/.bash/plugins/$__sash_loop_dir" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$"
+  else
+    find . -type f -print0 | xargs -0r stat -f '%R' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$"
+  fi
+}
+
 if [[ "$(_is_first_sash_run)" -eq "0" ]]; then
   # This is the first sash run, ask to create directories.
   echo -e "${white}[${green}+${white}]${restore} Welcome to S.A.S.H.!"
@@ -90,9 +135,9 @@ fi
 __sash_global_startup_time="$SECONDS"
 export SASH_LOADING=1
 
-_sash_category_dirs=( $(find "$HOME/.bash/plugins/" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$" | grep -v "^post$") )
+_sash_category_dirs=( __grab_initial_files  )
 for __sash_loop_dir in "${_sash_category_dirs[@]}"; do
-  _sash_subcategory_dirs=( $(find "$HOME/.bash/plugins/$__sash_loop_dir" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$") )
+  _sash_subcategory_dirs=( __grab_subdir_files )
   for __sash_loop_sub_dir in "${_sash_subcategory_dirs[@]}"; do
     for __sash_filename in $HOME/.bash/plugins/$__sash_loop_dir/$__sash_loop_sub_dir/*.sh; do
       [[ -x $__sash_filename ]] || [ "$SASH_IS_WINDOWS" -eq 1 ] || continue
