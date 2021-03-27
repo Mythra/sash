@@ -82,7 +82,7 @@ __ensure_find_type() {
   fi
 }
 
-# __grab_initial_files()
+# __grab_initial_files() -> Array<String>
 #
 # Modifies Variables: None
 #
@@ -92,11 +92,11 @@ __grab_initial_files() {
   if [[ "$SASH_FIND_FLAVOR" == "gnu" ]] ; then
     find "$HOME/.bash/plugins/" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$" | grep -v "^post$"
   else
-    find . -type f -print0 | xargs -0r stat -f '%R' | grep -v "^\.$" | grep -v "^\.\.^" | grep -v "^$" | grep -v "^post$"
+    find "$HOME/.bash/plugins/"  -maxdepth 1 -type d -print0 | xargs -0r stat -f '%N' | sed "s,$HOME/.bash/plugins/,," | grep -v "^\.$" | grep -v "^\.\.^" | grep -v "^$" | grep -v "^post$"
   fi
 }
 
-# __grab_subdir_files()
+# __grab_subdir_files(subdir: string) -> Array<String>
 #
 # Modifies Variables:
 #  - __sash_loop_dir: expects to be set
@@ -105,9 +105,9 @@ __grab_initial_files() {
 __grab_subdir_files() {
   __ensure_find_type
   if [[ "$SASH_FIND_FLAVOR" == "gnu" ]]; then
-    find "$HOME/.bash/plugins/$__sash_loop_dir" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$"
+    find "$HOME/.bash/plugins/$1" -maxdepth 1 -type d -printf '%P\n' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$"
   else
-    find . -type f -print0 | xargs -0r stat -f '%R' | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$"
+    find "$HOME/.bash/plugins/$1" -maxdepth 1 -type d -print0 | xargs -0r stat -f '%N' | sed "s,$HOME/.bash/plugins/$1/,," | grep -v "$HOME/.bash/plugins/$1" | grep -v "^\.$" | grep -v "^\.\.$" | grep -v "^$"
   fi
 }
 
@@ -135,9 +135,9 @@ fi
 __sash_global_startup_time="$SECONDS"
 export SASH_LOADING=1
 
-_sash_category_dirs=( __grab_initial_files  )
+_sash_category_dirs=( $(__grab_initial_files)  )
 for __sash_loop_dir in "${_sash_category_dirs[@]}"; do
-  _sash_subcategory_dirs=( __grab_subdir_files )
+  _sash_subcategory_dirs=( $(__grab_subdir_files "$__sash_loop_dir") )
   for __sash_loop_sub_dir in "${_sash_subcategory_dirs[@]}"; do
     for __sash_filename in $HOME/.bash/plugins/$__sash_loop_dir/$__sash_loop_sub_dir/*.sh; do
       [[ -x $__sash_filename ]] || [ "$SASH_IS_WINDOWS" -eq 1 ] || continue
